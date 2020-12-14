@@ -39,7 +39,7 @@ case nil:
 
 // Optional<Bool>
 //  - Dictionary
-
+#if false
 let preference: [String: Bool] = [
   "autoLogin": true,
   // "faceIdEnabled": true,
@@ -57,6 +57,51 @@ if preference["faceIdEnabled"] ?? false {
 } else {
   print("활성화되어 있지 않습니다.")
 }
+#endif
 
+// enum을 활용하면, 위의 세가지 상태를 안전하게 다룰 수 있는 방법을 제공할 수 있습니다.
 
+// RawRepresentable
+enum UserPreference: RawRepresentable {
+  case enabled
+  case disabled
+  case notSet
 
+  // init? - X
+  init(rawValue: Bool?) {
+    switch rawValue {
+    case true?:
+      self = .enabled
+    case false?:
+      self = .disabled
+    default:
+      self = .notSet
+    }
+  }
+
+  var rawValue: Bool? {
+    switch self {
+    case .enabled:
+      return true
+    case .disabled:
+      return false
+    case .notSet:
+      return nil
+    }
+  }
+}
+
+let preference: [String: Bool] = [
+  "autoLogin": true,
+  "faceIdEnabled": false,
+]
+
+let faceIdPref = UserPreference(rawValue: preference["faceIdEnabled"])
+switch faceIdPref {
+case .enabled:
+  print("Enabled")
+case .disabled:
+  print("Disabled")
+case .notSet:
+  print("Not set")
+}
