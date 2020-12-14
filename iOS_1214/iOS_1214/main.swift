@@ -25,3 +25,13 @@ print("\(name2) \(age2)")
 
 var t2 = foo2()
 print("\(t2.name) \(t2.age)")
+
+
+// var t3: (name: String, age: Int, isAdmin: Bool) = (name: "Tom", age: 42, isAdmin: false)
+
+typealias UserTuple = (name: String, age: Int, isAdmin: Bool)
+
+var t3: UserTuple = (name: "Tom", age: 42, isAdmin: false)
+var (name3, _, isAdmin) = t3
+
+print("\(name3) \(isAdmin)")
