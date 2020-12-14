@@ -14,7 +14,7 @@ struct Message {
   let userId: Int
   let contents: String?
   let date: Date
-  
+
   let hasJoined: Bool
   let hasLeft: Bool
 }
@@ -41,3 +41,26 @@ let joinMessage = Message.join(userId: 1, date: Date())
 
 let textMessage: Message = .text(userId: 1, contents: "Hello", date: Date())
 let leftMessage: Message = .leave(userId: 1, date: Date())
+
+func logMessage(message: Message) {
+  // 모든 경우를 처리해야 합니다.
+  #if false
+  switch message {
+  case let .text(userId: userId, contents: contents, date: date):
+    break
+  case let .join(userId: userId, date: date):
+    break
+  case let .leave(userId: userId, date: date):
+    break
+  }
+  #endif
+
+  switch message {
+  case let .text(userId, contents, date):
+    print("[\(date)(\(userId))] \(contents)")
+  case let .join(userId, date):
+    print("[\(date)(\(userId))] Join")
+  case let .leave(userId, date):
+    print("[\(date)(\(userId))] Leave")
+  }
+}
