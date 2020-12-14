@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7A53CDCD25873ED70074796E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A53CDCC25873ED70074796E /* main.swift */; };
+		7A53CDCD25873ED70074796E /* 6_초기화메소드.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A53CDCC25873ED70074796E /* 6_초기화메소드.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -35,7 +35,7 @@
 		7A53CDB9258724E70074796E /* 4_property3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 4_property3.swift; sourceTree = "<group>"; };
 		7A53CDBD258727E30074796E /* 5_Optional.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 5_Optional.swift; sourceTree = "<group>"; };
 		7A53CDC6258733770074796E /* 5_Optional2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 5_Optional2.swift; sourceTree = "<group>"; };
-		7A53CDCC25873ED70074796E /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		7A53CDCC25873ED70074796E /* 6_초기화메소드.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "6_초기화메소드.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,7 +79,7 @@
 				7A53CDB9258724E70074796E /* 4_property3.swift */,
 				7A53CDBD258727E30074796E /* 5_Optional.swift */,
 				7A53CDC6258733770074796E /* 5_Optional2.swift */,
-				7A53CDCC25873ED70074796E /* main.swift */,
+				7A53CDCC25873ED70074796E /* 6_초기화메소드.swift */,
 			);
 			path = iOS_1214;
 			sourceTree = "<group>";
@@ -142,7 +142,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7A53CDCD25873ED70074796E /* main.swift in Sources */,
+				7A53CDCD25873ED70074796E /* 6_초기화메소드.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
