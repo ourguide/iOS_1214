@@ -37,3 +37,50 @@ func parseLocation(_ latitude: String, _ longitude: String) throws -> Location {
 
   return Location(latitude: latitude, longitude: longitude)
 }
+
+// 4. throws 지정된 함수를 호출하는 방법
+// - try + do {} catch {}
+
+do {
+  let location = try parseLocation("3.14x", "4.8")
+  print(location)
+} catch {
+  // print(error)
+  // 5. catch 블록에 전달되는 오류의 타입은 오류의 최상위 타입이다.
+  switch error {
+  case ParseLocationError.invalidData:
+    print("invalidData")
+  case let ParseLocationError.network(message):
+    print("network - \(message)")
+  case ParseLocationError.locationDoesNotExist:
+    print("locationDoesNotExist")
+  default:
+    print("알 수 없는 오류가 발생하였습니다.")
+  }
+}
+
+// 6. catch에서 에러의 종류로 직접 처리하는 것이 가능합니다.
+do {
+  let location = try parseLocation("3.14x", "4.8")
+  print(location)
+} catch ParseLocationError.invalidData {
+  print("invalidData")
+} catch let ParseLocationError.network(message) {
+  print("network - \(message)")
+} catch ParseLocationError.locationDoesNotExist {
+  print("locationDoesNotExist")
+} catch {
+  print("알 수 없는 오류가 발생하였습니다.")
+}
+
+// 7. 에러의 타입에 따라 다른 처리를 할 수도 있습니다.
+do {
+  let location = try parseLocation("3.14x", "4.8")
+  print(location)
+} catch let error as ParseLocationError {
+  print("사용자가 정의한 오류 발생 - \(error)")
+} catch {
+  print("알 수 없는 오류 - \(error)")
+}
+
+
