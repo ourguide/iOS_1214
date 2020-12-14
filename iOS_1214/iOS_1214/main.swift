@@ -58,13 +58,21 @@ enum DataType {
   case string(String)
   case int(Int)
   case double(Double)
+  case dateRange(Range<Date>)
 }
+
+let start = Date()
+let end = Date().addingTimeInterval(10)
 
 let arr: [DataType] = [
   .date(Date()),
   .string("Hello"),
   .int(100),
-  .double(3.14)
+  .double(3.14),
+
+  // start...end : [start, end] - ClosedRange
+  // start..<end : [start, end) - Range
+  .dateRange(start ..< end)
 ]
 
 for element in arr {
@@ -77,5 +85,7 @@ for element in arr {
     print("int - \(v)")
   case let .double(v):
     print("double - \(v)")
+  case let .dateRange(v):
+    print("Range<Date> - \(v)")
   }
 }
