@@ -153,7 +153,7 @@ class OnlineCarMarket: CarMarket {
   }
 
   // 8. 부모의 지정 초기화 메소드를 오버라이딩 하면 됩니다.
-  // 9. 부모의 지정 초기화 메소드를 자식 클래스의 지정 초기화 메소드를 호출하는 편의 초기화 메소드로 만들면 편리합니다.
+  // 9. 부모의 지정 초기화 메소드를 오버라이딩 할 때, 자식 클래스의 지정 초기화 메소드를 호출하는 형태의 편의 초기화 메소드로 만들면 편리합니다.
   // override convenience init(cars: [Car], capacity: Int = 100) {
 
   // - required는 override를 포함하기 때문에 생략 가능하다.
@@ -197,20 +197,17 @@ protocol UserType {
   init(name: String)
 }
 
-
 // public: 외부 모듈에서 접근 할 수 있지만, 상속은 불가능하다.
 // open: 외부 모듈에서 접근도 가능하고, 상속도 가능하다.
 // internal: 내부 모듈에서만 접근 가능하다.  - 기본 속성
+// fileprivate: 같은 파일에서만 접근 가능하다.
+// private: 같은 블록에서만 접근 가능하다.
 class User: UserType {
   let name: String
 
   required init(name: String) {
     self.name = name
   }
-}
-
-class Truck : User {
-  
 }
 
 // final class인 경우, required를 생략할 수 있습니다.
@@ -229,7 +226,5 @@ final class Guest: UserType {
 
 struct Admin: UserType {
   // 구조체의 경우 required가 필요하지 않습니다.
-  init(name: String) {
-    
-  }
+  init(name: String) {}
 }
