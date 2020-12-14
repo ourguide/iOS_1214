@@ -1,47 +1,110 @@
 
 import Foundation
 
-// 프로퍼티 관찰자 - KVO
-// : Stored Property(저장 프로퍼티)의 값이 변경될 때 수행되는 블록을 지정할 수 있습니다.
-
-// didSet
-//  : 값이 변경된 후에 호출되는 블록입니다. - oldValue
-//  => 값의 변경 이후로 추가적으로 수행해야 하는 작업이 있을 경우 사용합니다.
-
-// willSet
-//  : 값이 변경되기 직전에 호출되는 블록입니다. - newValue
-//  => 속성이 변경되었다는 사실을 외부로 알릴 때 많이 사용합니다.
-
+// Optional
 struct User {
-  var email: String {
-    didSet {
-      print("didSet - \(oldValue)")
-
-      // didSet / willSet 다시 호출하지 않습니다.
-      email = email.lowercased().trimmingCharacters(in: .whitespaces)
-    }
-
-    willSet {
-      print("willSet - \(newValue)")
-    }
-  }
-  
-  init(email: String) {
-    self.email = email
-  
-    // defer: 함수가 종료되는 시점에 수행되는 블록입니다.
-    //        함수의 마지막에 수행되어야 하는 정리 코드를 실행하려는 경우 유용하게 사용할 수 있습니다.
-    defer {
-      self.email = email
-    }
-  }
-  
+  let id: Int
+  let email: String
+  let firstName: String? // Optional<String>
+  let lastName: String? // Optional<String>
 }
 
-// 주의사항: 초기화메소드를 통해서 설정된 값에 대해서는 호출되지 않습니다.
-//  => 해결방법
-var user = User(email: " Hello@gmail.com ")
-print(user.email)
+#if false
+let user = User(id: 0, email: "hello@gmail.com", firstName: "Gildong", lastName: "Hong")
 
-user.email = "World@gmail.com"
-print(user.email)
+// 1) enum을 통해 Optional이 만들어져 있습니다.
+/*
+ enum Optional<Wrapped> {
+   case none
+   case some(Wrapped)
+ }
+ */
+
+switch user.firstName {
+case let .some(value):
+  print("Firstname - \(value)")
+case .none:
+  print("Firstname에 입력이 안되었습니다.")
+}
+
+// 위의 표현을 좀더 간결하게 표현할 수 있습니다.
+switch user.lastName {
+case let value?:
+  print("Lastname - \(value)")
+case nil:
+  print("존재하지 않습니다.")
+}
+
+// 동시에 두 개 이상의 Optinal을 처리하는 것도 가능합니다.
+if let firstName = user.firstName {
+  if let lastName = user.lastName {
+    print("\(firstName) \(lastName)")
+  }
+}
+
+if let firstName = user.firstName,
+   let lastName = user.lastName
+{
+  print("\(firstName) \(lastName)")
+}
+
+// 다른 조건과 결합해서 사용하는 것도 가능합니다.
+if let firstName = user.firstName, !firstName.isEmpty {
+  print("조건 결합: \(firstName)")
+}
+
+if let _ = user.firstName,
+   let _ = user.lastName
+{
+  print("이름이 모두 입력되었습니다.")
+}
+
+if user.firstName != nil, user.lastName != nil {
+  print("이름이 모두 입력되었습니다.")
+}
+
+#endif
+
+class Person {
+  let email: String
+  let name: String
+
+  init(email: String, name: String) {
+    self.email = email
+    self.name = name
+  }
+}
+
+let user = User(id: 0, email: "hello@gmail.com", firstName: "Gildong", lastName: "Hong")
+let person = Person(email: "hello@gmail.com", name: "Gildong")
+
+print(user)
+print(person)
+
+// dump를 이용하면, 내부의 속성 값을 확인하는 데 유용합니다.
+// - dump(user)
+// - dump(person)
+
+// CustomStringConvitable 의 프로토콜을 만족하면, 사용자가 원하는 형태로 문자열 변환이 가능합니다.
+extension User: CustomStringConvertible {
+  var description: String {
+    var result = "\(email)(\(id)) - "
+
+    if let unwrappedFirstName = firstName {
+      result += unwrappedFirstName
+    }
+
+    // 스위프트에서 옵셔널 값에 대한 바인딩을 사용할 때, 동일한 이름을 통해 가리는 것이 일반적입니다.
+    if let lastName = lastName {
+      result += " \(lastName)"
+    }
+
+    return result
+  }
+}
+
+extension Person: CustomStringConvertible {
+  var description: String {
+    return "\(email) - \(name)"
+  }
+}
