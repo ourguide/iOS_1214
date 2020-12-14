@@ -105,3 +105,40 @@ case .disabled:
 case .notSet:
   print("Not set")
 }
+
+// Implicitly unwrapping Optional
+
+// Optional
+//   - Int? : Explicitly unwrapping Optional
+//   - Int! : Implicitly unwrapping Optional
+
+class Database {
+  var isConnected = false
+}
+
+// 초기화가 보장되는 작업에 대해서만 사용하는 것이 안전합니다.
+class UserManager {
+  var database: Database!
+
+  class func start() -> UserManager {
+    return UserManager()
+  }
+
+  func status() -> String {
+    if database.isConnected { // Optional인데 암묵적으로 값에 접근이 가능하다.
+      return "OK"
+    } else {
+      return "Database is Down"
+    }
+  }
+}
+
+let manager = UserManager.start()
+// manager.database = Database()
+
+let status = manager.status()
+print(status)
+
+if let database = manager.database {
+  print(database)
+}
