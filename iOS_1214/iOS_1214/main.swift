@@ -29,6 +29,8 @@ struct Admin {
 // - 구조체와 다르게 멤버 초기화 메소드가 자동으로 제공되지 않습니다.
 // - 사용자는 반드시 초기화 메소드를 직접 정의해야 합니다.
 
+// 상속은 다형성을 구현하는 방법입니다.
+
 #if false
 class Account {
   let email: String
@@ -40,6 +42,11 @@ class Account {
     self.password = password
     self.joinDate = joinDate
   }
+  
+  func display() {
+    print("Account display")
+  }
+  
 }
 
 class User: Account {
@@ -53,6 +60,10 @@ class User: Account {
 
     super.init(email: email, password: password, joinDate: joinDate)
   }
+  
+  override func display() {
+    print("User display")
+  }
 }
 
 class Admin: Account {
@@ -62,6 +73,10 @@ class Admin: Account {
     self.logs = logs
 
     super.init(email: email, password: password, joinDate: joinDate)
+  }
+  
+  override func display() {
+    print("Admin display")
   }
 }
 #endif
@@ -72,11 +87,16 @@ class Admin: Account {
 
 // Guest
 //  - email / password가 필요하지 않습니다.
+#if false
 class Account {
   let joinDate: Date
 
   init(joinDate: Date) {
     self.joinDate = joinDate
+  }
+  
+  func display() {
+    print("Account display")
   }
 }
 
@@ -96,6 +116,10 @@ class User: Account {
 
     super.init(joinDate: joinDate)
   }
+  
+  override func display() {
+    print("User display")
+  }
 }
 
 class Admin: Account {
@@ -109,6 +133,10 @@ class Admin: Account {
     self.logs = logs
 
     super.init(joinDate: joinDate)
+  }
+  
+  override func display() {
+    print("Admin display")
   }
 }
 
@@ -122,10 +150,77 @@ class Guest: Account {
 
     super.init(joinDate: joinDate)
   }
+  
+  override func display() {
+    print("Guest display")
+  }
 }
 
 let arr: [Account] = [
   User(email: "chansik@gmail.com", password: "linux123", joinDate: Date(), level: 0, exp: 0),
   Admin(email: "chansik@gmail.com", password: "linux123", joinDate: Date(), logs: []),
-  Guest(joinDate: Date(), level: 0, exp: 0)
+  Guest(joinDate: Date(), level: 0, exp: 0),
 ]
+
+// 다형성은 상속을 통해서 구현 가능합니다.
+for e in arr {
+  e.display()
+}
+
+#endif
+
+// enum을 이용하면, 상속의 관계를 표현할 수 있습니다.
+
+struct User {
+  let email: String
+  let password: String
+  let joinDate: Date
+
+  var level: Int
+  var exp: Int
+}
+
+struct Admin {
+  let email: String
+  let password: String
+  let joinDate: Date
+
+  var logs: [String]
+}
+
+struct Guest {
+  let joinDate: Date
+
+  var level: Int
+  var exp: Int
+}
+
+// 문제점
+//  1) enum을 사용하면 중복된 항목을 별도로 캡슐화하는 것이 어렵습니다.
+//  2) 다형성을 구현하기 어렵습니다.
+
+// 장점
+//  1) 새로운 유형을 추가할 때, 기존 코드의 수정이 필요하지 않습니다.
+//  2) 구조체를 활용할 수 있습니다.
+enum Account {
+  case user(User)
+  case admin(Admin)
+  case guest(Guest)
+}
+
+let arr: [Account] = [
+  .user(User(email: "chansik@gmail.com", password: "linux123", joinDate: Date(), level: 0, exp: 0)),
+  .admin(Admin(email: "chansik@gmail.com", password: "linux123", joinDate: Date(), logs: [])),
+  .guest(Guest(joinDate: Date(), level: 0, exp: 0)),
+]
+
+for e in arr {
+  switch e {
+  case let .user(v):
+    print(v)
+  case let .admin(v):
+    print(v)
+  case let .guest(v):
+    print(v)
+  }
+}
