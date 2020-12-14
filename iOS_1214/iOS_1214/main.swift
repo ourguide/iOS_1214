@@ -8,7 +8,7 @@ import Foundation
 //  2) is: 타입 체크
 
 // let arr: Array<Any> = [
-
+#if false
 let arr: [Any] = [
   Date(),
   "Hello",
@@ -45,4 +45,37 @@ for element in arr {
     print("지원하지 않는 타입입니다.")
   }
   #endif
+}
+#endif
+
+// Date(),
+// "Hello",
+// 100,
+// 3.14
+
+enum DataType {
+  case date(Date)
+  case string(String)
+  case int(Int)
+  case double(Double)
+}
+
+let arr: [DataType] = [
+  .date(Date()),
+  .string("Hello"),
+  .int(100),
+  .double(3.14)
+]
+
+for element in arr {
+  switch element {
+  case let .date(v):
+    print("date - \(v)")
+  case let .string(v):
+    print("string - \(v)")
+  case let .int(v):
+    print("int - \(v)")
+  case let .double(v):
+    print("double - \(v)")
+  }
 }
