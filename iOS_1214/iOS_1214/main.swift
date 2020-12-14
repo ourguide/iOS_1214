@@ -42,11 +42,10 @@ class Account {
     self.password = password
     self.joinDate = joinDate
   }
-  
+
   func display() {
     print("Account display")
   }
-  
 }
 
 class User: Account {
@@ -60,7 +59,7 @@ class User: Account {
 
     super.init(email: email, password: password, joinDate: joinDate)
   }
-  
+
   override func display() {
     print("User display")
   }
@@ -74,7 +73,7 @@ class Admin: Account {
 
     super.init(email: email, password: password, joinDate: joinDate)
   }
-  
+
   override func display() {
     print("Admin display")
   }
@@ -94,7 +93,7 @@ class Account {
   init(joinDate: Date) {
     self.joinDate = joinDate
   }
-  
+
   func display() {
     print("Account display")
   }
@@ -116,7 +115,7 @@ class User: Account {
 
     super.init(joinDate: joinDate)
   }
-  
+
   override func display() {
     print("User display")
   }
@@ -134,7 +133,7 @@ class Admin: Account {
 
     super.init(joinDate: joinDate)
   }
-  
+
   override func display() {
     print("Admin display")
   }
@@ -150,7 +149,7 @@ class Guest: Account {
 
     super.init(joinDate: joinDate)
   }
-  
+
   override func display() {
     print("Guest display")
   }
@@ -208,6 +207,22 @@ enum Account {
   case guest(Guest)
 }
 
+// extension을 통해서 기능을 내부적으로 처리할 수 있습니다.
+//  => class의 오버라이딩보다 더 좋은 성능으로 동작한다.
+extension Account {
+  func display() {
+    switch self {
+    case let .user(v):
+      print(v)
+    case let .admin(v):
+      print(v)
+    case let .guest(v):
+      print(v)
+    }
+  }
+}
+
+//----------------------------
 let arr: [Account] = [
   .user(User(email: "chansik@gmail.com", password: "linux123", joinDate: Date(), level: 0, exp: 0)),
   .admin(Admin(email: "chansik@gmail.com", password: "linux123", joinDate: Date(), logs: [])),
@@ -215,12 +230,5 @@ let arr: [Account] = [
 ]
 
 for e in arr {
-  switch e {
-  case let .user(v):
-    print(v)
-  case let .admin(v):
-    print(v)
-  case let .guest(v):
-    print(v)
-  }
+  e.display()
 }
