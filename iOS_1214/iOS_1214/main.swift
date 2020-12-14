@@ -1,73 +1,47 @@
 
 import Foundation
 
-struct UIImage {
-  let url: String
-}
+// 프로퍼티 관찰자 - KVO
+// : Stored Property(저장 프로퍼티)의 값이 변경될 때 수행되는 블록을 지정할 수 있습니다.
 
-#if false
-struct Image {
-  var url: String
+// didSet
+//  : 값이 변경된 후에 호출되는 블록입니다. - oldValue
+//  => 값의 변경 이후로 추가적으로 수행해야 하는 작업이 있을 경우 사용합니다.
 
-  // 계산이 오래 걸리는 작업에 대해서는, 계산형 프로퍼티는 적합하지 않다.
-  var image: UIImage {
-    print("Download image from \(url)")
-    sleep(2)
+// willSet
+//  : 값이 변경되기 직전에 호출되는 블록입니다. - newValue
+//  => 속성이 변경되었다는 사실을 외부로 알릴 때 많이 사용합니다.
 
-    return UIImage(url: url)
+struct User {
+  var email: String {
+    didSet {
+      print("didSet - \(oldValue)")
+
+      // didSet / willSet 다시 호출하지 않습니다.
+      email = email.lowercased().trimmingCharacters(in: .whitespaces)
+    }
+
+    willSet {
+      print("willSet - \(newValue)")
+    }
   }
-}
-#endif
-
-struct Image {
-  // 4) 주의: lazy 블록에서 의존하는 속성은 불변으로 만드는 것이 좋다.
-  let url: String
-
-  // 속성이 처음 접근되는 시점에 한번만 수행되도록 하고 싶다면, lazy 속성을 이용하면 됩니다.
-  //  => 지연 초기화
-  //  => 함수 호출을 지정해야 합니다.
   
-  private(set) lazy var image: UIImage = {
-    print("Download image from \(url)")
-    sleep(2)
-
-    return UIImage(url: url)
-  }()
-
-  // lazy var image2: UIImage = loadImageFromUrl()
-
-  // 메소드를 통해서 지연 속성을 초기화하는 것도 가능합니다.
-  private func loadImageFromUrl() -> UIImage {
-    print("Download image from \(url)")
-    sleep(2)
-
-    return UIImage(url: url)
+  init(email: String) {
+    self.email = email
+  
+    // defer: 함수가 종료되는 시점에 수행되는 블록입니다.
+    //        함수의 마지막에 수행되어야 하는 정리 코드를 실행하려는 경우 유용하게 사용할 수 있습니다.
+    defer {
+      self.email = email
+    }
   }
-
-  init(url: String) {
-    self.url = url
-  }
+  
 }
 
-// 주의사항
-//  1) 저장형 프로퍼티(Stored Property)이기 때문에, 값을 변경하는 동작을 수행하기 위해서 var로 지정되어야 합니다.
-var image = Image(url: "https://a.com/1.jpg")
+// 주의사항: 초기화메소드를 통해서 설정된 값에 대해서는 호출되지 않습니다.
+//  => 해결방법
+var user = User(email: " Hello@gmail.com ")
+print(user.email)
 
-//  2) 초기화 메소드를 통해 초기화될 경우 의도하지 않은 동작이 발생할 수 있습니다.
-//   해결방법: 사용자 정의 초기화 메소드를 추가하는 것이 좋습니다.
-// var image = Image(url: "https://a.com/1.jpg", image: UIImage(url: ""))
-
-// 3) 세터를 통해서 image가 외부에서 변경될 경우, 초기화 블록이 제대로 수행되지 않습니다.
-//   해결방법: 외부에서 접근이 불가능하도록 해주는 것이 좋습니다.
-// image.image = UIImage(url: "")
-
-print("Image 생성")
-
-for _ in 0 ..< 5 {
-  print(image.image)
-}
-
-// image.url = "https://a.com/2.jpg"
-print(image.image)
-
-
+user.email = "World@gmail.com"
+print(user.email)
