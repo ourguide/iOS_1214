@@ -29,6 +29,34 @@ class Truck: Car {
 Truck.foo()
 #endif
 
+#if false
+// class func
+class Car {
+  class var name: String {
+    return "Car"
+  }
+
+  // 타입에 대한 정보를 런타임에 동적으로 접근할 수 있다.
+  //  정의: 자기 자신의 동적 클래스
+  // - Self
+  func show() {
+    print(Self.name)
+  }
+}
+
+class Truck: Car {
+  override class var name: String {
+    return "Truck"
+  }
+}
+
+// print(Car.name)
+// print(Truck.name)
+
+let car: Car = Truck()
+car.show()
+#endif
+
 // ----------------
 // enum이 제공하는 모든 형태를 배열로 얻어올 수 있는 프로토콜이 있습니다.
 enum Color: CaseIterable {
@@ -48,7 +76,7 @@ struct Car {
 }
 #endif
 
-#if false
+#if true
 struct Car {
   let name: String
   let color: Color
@@ -78,7 +106,7 @@ class CarMarket {
   // 4. class 타입은 초기화메소드를 반드시 제공해야 합니다.
   //  - 모든 프로터피를 온전하게 초기화하는 초기화 메소드를 '지정 초기화 메소드'라고 합니다.
   //  - 파라미터 기본값을 제공하면, 불필요한 오버로딩을 방지할 수 있습니다.
-  init(cars: [Car], capacity: Int = 100) {
+  required init(cars: [Car], capacity: Int = 100) {
     self.cars = cars
     self.capacity = capacity
   }
@@ -93,6 +121,17 @@ class CarMarket {
     // self.cars = cars
     // self.capacity = 100
     self.init(cars: cars, capacity: 100)
+  }
+
+  // 정적 팩토리 메소드 - static factory method
+  //  - 문제점: 자식 클래스 반드시 팩토리 함수를 재정의해야 합니다.
+  // class func create(cars: [Car]) -> CarMarket {
+  //   return CarMarket(cars: cars)
+  // }
+
+  class func create(cars: [Car]) -> Self {
+    return self.init(cars: cars)
+    // 정적 팩토리 메소드에서 호출하는 초기화 메소드는 반드시 자식 클래스에서도 정의되어야 한다. - required
   }
 }
 
@@ -115,12 +154,20 @@ class OnlineCarMarket: CarMarket {
 
   // 8. 부모의 지정 초기화 메소드를 오버라이딩 하면 됩니다.
   // 9. 부모의 지정 초기화 메소드를 자식 클래스의 지정 초기화 메소드를 호출하는 편의 초기화 메소드로 만들면 편리합니다.
-  override convenience init(cars: [Car], capacity: Int = 100) {
+  // override convenience init(cars: [Car], capacity: Int = 100) {
+
+  // - required는 override를 포함하기 때문에 생략 가능하다.
+  required convenience init(cars: [Car], capacity: Int = 100) {
     // self.url = "https://car.naver.com/"
     // super.init(cars: cars, capacity: capacity)
 
     self.init(cars: cars, capacity: capacity, url: "https://car.naver.com/")
   }
+
+  // 팩토리 함수를 재정의해야 합니다.
+  // override class func create(cars: [Car]) -> OnlineCarMarket {
+  //  return OnlineCarMarket(cars: cars)
+  // }
 }
 
 // 6. 자식 클래스가 초기화 메소드를 제공하지 않을 경우, 부모의 지정 초기화 메소드와 편의 초기화 메소드를 사용할 수 있다.
@@ -136,28 +183,8 @@ let market3 = OnlineCarMarket(names: [
 let market4 = OnlineCarMarket(cars: [], capacity: 100, url: "https://car.naver.com")
 #endif
 
-// class func
-class Car {
-  class var name: String {
-    return "Car"
-  }
+let market5 = OnlineCarMarket.create(cars: [])
+let market6 = CarMarket.create(cars: [])
 
-  // 타입에 대한 정보를 런타임에 동적으로 접근할 수 있다.
-  //  정의: 자기 자신의 동적 클래스
-  // - Self
-  func show() {
-    print(Self.name)
-  }
-}
-
-class Truck: Car {
-  override class var name: String {
-    return "Truck"
-  }
-}
-
-// print(Car.name)
-// print(Truck.name)
-
-let car: Car = Truck()
-car.show()
+dump(market5)
+dump(market6)
