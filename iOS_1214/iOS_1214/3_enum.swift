@@ -44,16 +44,14 @@ let leftMessage: Message = .leave(userId: 1, date: Date())
 
 func logMessage(message: Message) {
   // 모든 경우를 처리해야 합니다.
-  #if false
-  switch message {
-  case let .text(userId: userId, contents: contents, date: date):
-    break
-  case let .join(userId: userId, date: date):
-    break
-  case let .leave(userId: userId, date: date):
-    break
-  }
-  #endif
+  //  switch message {
+  //  case .text(userId: let userId, contents: let contents, date: let date):
+  //    break
+  //  case .join(userId: let userId, date: let date):
+  //    break
+  //  case .leave(userId: let userId, date: let date):
+  //    break
+  //  }
 
   switch message {
   case let .text(userId, contents, date):
