@@ -75,7 +75,7 @@ class Person {
   }
 }
 
-let user = User(id: 0, email: "hello@gmail.com", firstName: "Gildong", lastName: "Hong")
+let user = User(id: 0, email: "hello@gmail.com", firstName: nil, lastName: nil)
 let person = Person(email: "hello@gmail.com", name: "Gildong")
 
 print(user)
@@ -106,5 +106,50 @@ extension User: CustomStringConvertible {
 extension Person: CustomStringConvertible {
   var description: String {
     return "\(email) - \(name)"
+  }
+}
+
+func createWelcomeMessage(name: String) -> String {
+  return "Welcome, \(name)"
+}
+
+#if false
+extension User {
+  var displayName: String? {
+    guard let firstName = firstName, let lastName = lastName else {
+      return nil
+    }
+
+    return "\(firstName), \(lastName)"
+  }
+}
+#endif
+
+// let result = createWelcomeMessage(name: user.displayName)
+// print(result)
+
+if let displayName = user.displayName {
+  let result = createWelcomeMessage(name: displayName)
+  print(result)
+} else {
+  let result = createWelcomeMessage(name: "Customer")
+  print(result)
+}
+
+// 위의 코드는 nil 병합 연산자(??)를 이용하면, 간결하게 표현할 수 있습니다.
+let displayName = user.displayName ?? "Customer"
+let result = createWelcomeMessage(name: displayName)
+print(result)
+
+extension User {
+  // '와일드카드 패턴'을 이용하면, 다양한 조합을 쉽게 제공할 수 있습니다.
+  var displayName: String? {
+    switch (firstName, lastName) {
+    case let (firstName?, lastName?): return "\(firstName), \(lastName)"
+    case let (firstName?, nil): return firstName
+    case let (nil, lastName?): return lastName
+    default:
+      return nil
+    }
   }
 }
