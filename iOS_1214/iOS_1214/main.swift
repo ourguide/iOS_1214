@@ -186,5 +186,40 @@ let market4 = OnlineCarMarket(cars: [], capacity: 100, url: "https://car.naver.c
 let market5 = OnlineCarMarket.create(cars: [])
 let market6 = CarMarket.create(cars: [])
 
-dump(market5)
-dump(market6)
+// dump(market5)
+// dump(market6)
+
+// required init
+//  1) 클래스 팩토리 메소드
+//  2) 프로토콜
+
+protocol UserType {
+  init(name: String)
+}
+
+class User: UserType {
+  let name: String
+
+  required init(name: String) {
+    self.name = name
+  }
+}
+
+// final class인 경우, required를 생략할 수 있습니다.
+// => 상속 계층의 마지막 클래스
+//  : 상속 계층의 마지막 클래스에 대해서 final을 사용하는 것은 프로그램의 성능 향상에 도움이 된다.
+//   - https://developer.apple.com/swift/blog/?id=27
+final class Guest: UserType {
+  let name: String
+
+  init(name: String) {
+    self.name = name
+  }
+}
+
+struct Admin: UserType {
+  // 구조체의 경우 required가 필요하지 않습니다.
+  init(name: String) {
+    
+  }
+}
