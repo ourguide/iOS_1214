@@ -1,92 +1,52 @@
-// 프로퍼티
-// 1. Stored Property
-//   : 데이터를 저장할 수 있는 프로퍼티
 
-// 2. Computed Property
-//   : 프로퍼티를 가장한 메소드 입니다.
-//     간단한 메소드를 계산형 프로퍼티로 변경함으로써, 코드의 '가독성'을 올릴 수 있습니다.
 import Foundation
 
-#if false
-struct Timer {
-  let id: Int
-  let startTime: Date
-  var endTime: Date?
-
-  func elapsedTime() -> TimeInterval {
-    return Date().timeIntervalSince(startTime)
-  }
-
-  func isFinished() -> Bool {
-    return endTime != nil
-  }
-
-  // 내부의 속성을 변경하는 메소드의 앞에는 mutating을 지정해 주어야 합니다.
-  mutating func setFinished() {
-    endTime = Date()
-  }
-
-  // 사용자가 원하는 형태로 초기화하기 위해서는, 별도의 초기화 메소드를 제공해 주어야 합니다.
-  // => 구조체가 자동으로 제공하는 초기화 메소드는 사라집니다.
-  init(id: Int, startTime: Date) {
-    self.id = id
-    self.startTime = startTime
-  }
+struct UIImage {
+  let url: String
 }
 
-// 구조체의 mutating 메소드를 호출하기 위해서는 var를 사용해야 합니다.
-var timer = Timer(id: 10, startTime: Date())
-print(timer.elapsedTime())
-sleep(3)
-print(timer.elapsedTime())
-timer.setFinished()
-print(timer.isFinished())
+#if false
+struct Image {
+  var url: String
+
+  // 계산이 오래 걸리는 작업에 대해서는, 계산형 프로퍼티는 적합하지 않다.
+  var image: UIImage {
+    print("Download image from \(url)")
+    sleep(2)
+
+    return UIImage(url: url)
+  }
+}
 #endif
 
-struct Timer {
-  let id: Int
-  let startTime: Date
-  var endTime: Date?
+struct Image {
+  var url: String
 
-  // getter만 제공할 경우, 아래처럼 사용하는 것 보다 더 간단하게 정의할 수 있습니다.
-  //  var elapsedTime: TimeInterval {
-  //    get {
-  //      return Date().timeIntervalSince(startTime)
-  //    }
-  //  }
+  // 속성이 처음 접근되는 시점에 한번만 수행되도록 하고 싶다면, lazy 속성을 이용하면 됩니다.
+  //  => 지연 초기화
+  //  => 함수 호출을 지정해야 합니다.
+  lazy var image: UIImage = {
+    print("Download image from \(url)")
+    sleep(2)
 
-  var elapsedTime: TimeInterval {
-    return Date().timeIntervalSince(startTime)
-  }
+    return UIImage(url: url)
+  }()
 
-  // 계산형 프로퍼티는 var를 통해 만들어야 합니다.
-  var isFinished: Bool {
-    get {
-      return endTime != nil
-    }
+  lazy var image2: UIImage = loadImageFromUrl()
 
-    set {
-      // newValue: 사용자가 전달한 값
-      if newValue {
-        endTime = Date()
-      } else {
-        endTime = nil
-      }
-    }
-  }
+  // 메소드를 통해서 지연 속성을 초기화하는 것도 가능합니다.
+  private func loadImageFromUrl() -> UIImage {
+    print("Download image from \(url)")
+    sleep(2)
 
-  // 사용자가 원하는 형태로 초기화하기 위해서는, 별도의 초기화 메소드를 제공해 주어야 합니다.
-  // => 구조체가 자동으로 제공하는 초기화 메소드는 사라집니다.
-  init(id: Int, startTime: Date) {
-    self.id = id
-    self.startTime = startTime
+    return UIImage(url: url)
   }
 }
 
-var timer = Timer(id: 10, startTime: Date())
-print(timer.elapsedTime)
-sleep(3)
-print(timer.elapsedTime)
+//  => 저장형 프로퍼티(Stored Property)이기 때문에, 값을 변경하는 동작을 수행하기 위해서 var로 지정되어야 합니다.
+var image = Image(url: "https://a.com/1.jpg")
+print("Image 생성")
 
-timer.isFinished = true
-print(timer.isFinished)
+for _ in 0 ..< 5 {
+  print(image.image2)
+}
