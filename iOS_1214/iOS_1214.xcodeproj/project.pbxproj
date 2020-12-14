@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7A53CDA12586ECF40074796E /* 3_enum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A53CDA02586ECF40074796E /* 3_enum.swift */; };
+		7A53CDA12586ECF40074796E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A53CDA02586ECF40074796E /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,7 +26,7 @@
 		7A53CD902586E1D10074796E /* iOS_1214 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = iOS_1214; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A53CD932586E1D10074796E /* 1_시작.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "1_시작.swift"; sourceTree = "<group>"; };
 		7A53CD9C2586EA030074796E /* 2_Tuple.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 2_Tuple.swift; sourceTree = "<group>"; };
-		7A53CDA02586ECF40074796E /* 3_enum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = 3_enum.swift; sourceTree = "<group>"; };
+		7A53CDA02586ECF40074796E /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,7 +61,7 @@
 			children = (
 				7A53CD932586E1D10074796E /* 1_시작.swift */,
 				7A53CD9C2586EA030074796E /* 2_Tuple.swift */,
-				7A53CDA02586ECF40074796E /* 3_enum.swift */,
+				7A53CDA02586ECF40074796E /* main.swift */,
 			);
 			path = iOS_1214;
 			sourceTree = "<group>";
@@ -124,7 +124,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7A53CDA12586ECF40074796E /* 3_enum.swift in Sources */,
+				7A53CDA12586ECF40074796E /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

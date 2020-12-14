@@ -35,6 +35,7 @@ enum Message {
   case text(userId: Int, contents: String, date: Date)
   case join(userId: Int, date: Date)
   case leave(userId: Int, date: Date)
+  // case etc
 }
 
 let joinMessage = Message.join(userId: 1, date: Date())
@@ -62,3 +63,14 @@ func logMessage(message: Message) {
     print("[\(date)(\(userId))] Leave")
   }
 }
+
+logMessage(message: joinMessage)
+logMessage(message: textMessage)
+logMessage(message: leftMessage)
+
+// 단일 항목을 처리하고 싶을 때는 if case 를 사용하면 됩니다.
+if case let .text(userId, contents, date) = textMessage {
+  print("[\(date)(\(userId))] \(contents)")
+}
+
+
