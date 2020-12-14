@@ -11,7 +11,6 @@ import Foundation
 // willSet
 //  : 값이 변경되기 직전에 호출되는 블록입니다. - newValue
 //  => 속성이 변경되었다는 사실을 외부로 알릴 때 많이 사용합니다.
-
 struct User {
   var email: String {
     didSet {
