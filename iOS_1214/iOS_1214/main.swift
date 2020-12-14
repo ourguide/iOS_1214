@@ -48,6 +48,7 @@ struct Car {
 }
 #endif
 
+#if false
 struct Car {
   let name: String
   let color: Color
@@ -133,3 +134,30 @@ let market3 = OnlineCarMarket(names: [
 
 // 7. 자식이 초기화 메소드를 제공할 경우, 부모의 초기화 메소드(지정, 편의)는 사용할 수 없다,
 let market4 = OnlineCarMarket(cars: [], capacity: 100, url: "https://car.naver.com")
+#endif
+
+// class func
+class Car {
+  class var name: String {
+    return "Car"
+  }
+
+  // 타입에 대한 정보를 런타임에 동적으로 접근할 수 있다.
+  //  정의: 자기 자신의 동적 클래스
+  // - Self
+  func show() {
+    print(Self.name)
+  }
+}
+
+class Truck: Car {
+  override class var name: String {
+    return "Truck"
+  }
+}
+
+// print(Car.name)
+// print(Truck.name)
+
+let car: Car = Truck()
+car.show()
