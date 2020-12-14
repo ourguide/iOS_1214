@@ -197,6 +197,10 @@ protocol UserType {
   init(name: String)
 }
 
+
+// public: 외부 모듈에서 접근 할 수 있지만, 상속은 불가능하다.
+// open: 외부 모듈에서 접근도 가능하고, 상속도 가능하다.
+// internal: 내부 모듈에서만 접근 가능하다.  - 기본 속성
 class User: UserType {
   let name: String
 
@@ -205,10 +209,16 @@ class User: UserType {
   }
 }
 
+class Truck : User {
+  
+}
+
 // final class인 경우, required를 생략할 수 있습니다.
 // => 상속 계층의 마지막 클래스
 //  : 상속 계층의 마지막 클래스에 대해서 final을 사용하는 것은 프로그램의 성능 향상에 도움이 된다.
 //   - https://developer.apple.com/swift/blog/?id=27
+//    1) final
+//    2) private method
 final class Guest: UserType {
   let name: String
 
