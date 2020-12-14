@@ -1,144 +1,70 @@
 
 import Foundation
 
+// static vs class
+// - class 프로퍼티 / 메소드는 class에서만 만들 수 있습니다.
+// - class 오버라이딩이 가능합니다.
+
 #if false
-enum Membership {
-  case gold
-  case silver
-  // case bronze
-}
-
-struct User {
-  let membership: Membership?
-}
-
-let user = User(membership: .gold)
-
-if let membership = user.membership {
-  switch membership {
-  case .gold:
-    print("10% 할인")
-  case .silver:
-    print("5% 할인")
+class Car {
+  class func foo() {
+    print("Car foo")
   }
-} else {
-  print("0% 할인")
+
+//  static func foo() {
+//    print("Car foo")
+//  }
 }
 
-// 위의 코드를 간결하게 표현하는 방법
-//  주의사항: default를 사용하면, 컴파일러가 새로운 항목이 추가되어도 오류를 주지 않습니다.
-switch user.membership {
-case .gold?:
-  print("10% 할인")
-case .silver?:
-  print("5% 할인")
-case nil:
-  print("0% 할인")
+class Truck: Car {
+  override class func foo() {
+    print("Truck foo")
+  }
+
+//  static func foo() {
+//    print("Truck foo")
+//  }
+}
+
+Truck.foo()
+#endif
+
+// ----------------
+// enum이 제공하는 모든 형태를 배열로 얻어올 수 있는 프로토콜이 있습니다.
+enum Color: CaseIterable {
+  case red, blue, white, crayon
+}
+
+#if false
+struct Car {
+  let name: String
+  let color: Color
+
+  init(name: String) {
+    self.name = name
+    self.color = Color.allCases.randomElement()!
+    // randomElement - case가 존재하지 않을 경우, nil을 반환합니다.
+  }
 }
 #endif
 
-// Optional<Bool>
-//  - Dictionary
-#if false
-let preference: [String: Bool] = [
-  "autoLogin": true,
-  // "faceIdEnabled": true,
-]
-
-// - 'nil 병합 연산자'를 이용해서 값이 없을 경우에 대한 기본값을 지정하면 됩니다.
-#if false
-if let isFaceIdEnabled = preference["faceIdEnabled"] {
-  print(isFaceIdEnabled)
+struct Car {
+  let name: String
+  let color: Color
 }
-#endif
 
-if preference["faceIdEnabled"] ?? false {
-  print("페이스 아이디 설정 화면")
-} else {
-  print("활성화되어 있지 않습니다.")
-}
-#endif
+// 1. 구조체는 자동으로 각 프로퍼티를 초기화하는 메소드를 제공합니다.
+let car = Car(name: "Sonata", color: .white)
 
-// enum을 활용하면, 위의 세가지 상태를 안전하게 다룰 수 있는 방법을 제공할 수 있습니다.
+// 2. 사용자 정의 초기화 메소드를 제공할 경우, 멤버 와이즈 초기화 메소드는 더 이상 자동으로 제공되지 않습니다.
+let car2 = Car(name: "Sonata")
+print(car2)
 
-// RawRepresentable
-enum UserPreference: RawRepresentable {
-  case enabled
-  case disabled
-  case notSet
-
-  // init? - X
-  init(rawValue: Bool?) {
-    switch rawValue {
-    case true?:
-      self = .enabled
-    case false?:
-      self = .disabled
-    default:
-      self = .notSet
-    }
+// 3. 사용자 정의 초기화 메소드도 필요하고, 멤버 와이즈 초기화 메소드도 필요한 경우
+// => 사용자 정의 초기화 메소드를 extension을 통해 제공하면 됩니다.
+extension Car {
+  init(name: String) {
+    self.name = name
+    self.color = Color.allCases.randomElement()!
   }
-
-  var rawValue: Bool? {
-    switch self {
-    case .enabled:
-      return true
-    case .disabled:
-      return false
-    case .notSet:
-      return nil
-    }
-  }
-}
-
-let preference: [String: Bool] = [
-  "autoLogin": true,
-  "faceIdEnabled": false,
-]
-
-let faceIdPref = UserPreference(rawValue: preference["faceIdEnabled"])
-switch faceIdPref {
-case .enabled:
-  print("Enabled")
-case .disabled:
-  print("Disabled")
-case .notSet:
-  print("Not set")
-}
-
-// Implicitly unwrapping Optional
-
-// Optional
-//   - Int? : Explicitly unwrapping Optional
-//   - Int! : Implicitly unwrapping Optional
-
-class Database {
-  var isConnected = false
-}
-
-// 초기화가 보장되는 작업에 대해서만 사용하는 것이 안전합니다.
-class UserManager {
-  var database: Database!
-
-  class func start() -> UserManager {
-    return UserManager()
-  }
-
-  func status() -> String {
-    if database.isConnected { // Optional인데 암묵적으로 값에 접근이 가능하다.
-      return "OK"
-    } else {
-      return "Database is Down"
-    }
-  }
-}
-
-let manager = UserManager.start()
-// manager.database = Database()
-
-let status = manager.status()
-print(status)
-
-if let database = manager.database {
-  print(database)
 }
