@@ -1,91 +1,131 @@
-
 import Foundation
 
-// enum - 타입 안정성
-
-// 1. Any: 모든 타입을 참조할 수 있는 타입입니다.
-//  1) as: 타입 변환
-//  2) is: 타입 체크
-
-// let arr: Array<Any> = [
+// '상속'을 대체할 수 있습니다.
 #if false
-let arr: [Any] = [
-  Date(),
-  "Hello",
-  100,
-  3.14
-]
+struct User {
+  let email: String
+  let password: String
+  let joinDate: Date
 
-for element in arr {
-  switch element {
-  case let v as String:
-    print("String - \(v)")
-  case let v as Date:
-    print("Date - \(v)")
-  case let v as Int:
-    print("Int - \(v)")
-  case let v as Double:
-    print("Double - \(v)")
-  default:
-    print("지원하지 않는 타입입니다.")
-  }
+  var level: Int
+  var exp: Int
+}
 
-  // 타입 체크만 필요할 때
-  #if false
-  switch element {
-  case is String:
-    print("String")
-  case is Date:
-    print("Date")
-  case is Int:
-    print("Int")
-  case is Double:
-    print("Double")
-  default:
-    print("지원하지 않는 타입입니다.")
-  }
-  #endif
+struct Admin {
+  let email: String
+  let password: String
+  let joinDate: Date
+
+  var logs: [String]
 }
 #endif
 
-// Date(),
-// "Hello",
-// 100,
-// 3.14
+// 위의 코드는 중복된 속성이 존재합니다.
+// - 객체지향 프로그래밍에서는 중복된 속성을 부모 클래스를 통해 캡슐화할 수 있습니다.
+// 문제점
+// - 스위프트에서 상속을 이용하기 위해서는 구조체가 아닌 클래스를 이용해야 합니다.
 
-enum DataType {
-  case date(Date)
-  case string(String)
-  case int(Int)
-  case double(Double)
-  case dateRange(Range<Date>)
-}
+// 클래스
+// - 구조체와 다르게 멤버 초기화 메소드가 자동으로 제공되지 않습니다.
+// - 사용자는 반드시 초기화 메소드를 직접 정의해야 합니다.
 
-let start = Date()
-let end = Date().addingTimeInterval(10)
+#if false
+class Account {
+  let email: String
+  let password: String
+  let joinDate: Date
 
-let arr: [DataType] = [
-  .date(Date()),
-  .string("Hello"),
-  .int(100),
-  .double(3.14),
-
-  // start...end : [start, end] - ClosedRange
-  // start..<end : [start, end) - Range
-  .dateRange(start ..< end)
-]
-
-for element in arr {
-  switch element {
-  case let .date(v):
-    print("date - \(v)")
-  case let .string(v):
-    print("string - \(v)")
-  case let .int(v):
-    print("int - \(v)")
-  case let .double(v):
-    print("double - \(v)")
-  case let .dateRange(v):
-    print("Range<Date> - \(v)")
+  init(email: String, password: String, joinDate: Date) {
+    self.email = email
+    self.password = password
+    self.joinDate = joinDate
   }
 }
+
+class User: Account {
+  var level: Int
+  var exp: Int
+
+  // 자신의 속성을 먼저 초기화하고, 부모의 초기화 메소드를 이용해서 초기화를 수행합니다.
+  init(email: String, password: String, joinDate: Date, level: Int, exp: Int) {
+    self.level = level
+    self.exp = exp
+
+    super.init(email: email, password: password, joinDate: joinDate)
+  }
+}
+
+class Admin: Account {
+  var logs: [String]
+
+  init(email: String, password: String, joinDate: Date, logs: [String]) {
+    self.logs = logs
+
+    super.init(email: email, password: password, joinDate: joinDate)
+  }
+}
+#endif
+
+// 상속의 문제점 - 경직된 설계
+// - 새로운 Account 타입이 도입될 때, 기존에 설계한 구조와 다를 경우 전체적인 구조에 대한 리팩토링이 필요합니다.
+// - 상속을 이용하기 위해서는 참조 타입인 클래스를 이용해야 합니다.
+
+// Guest
+//  - email / password가 필요하지 않습니다.
+class Account {
+  let joinDate: Date
+
+  init(joinDate: Date) {
+    self.joinDate = joinDate
+  }
+}
+
+class User: Account {
+  let email: String
+  let password: String
+
+  var level: Int
+  var exp: Int
+
+  // 자신의 속성을 먼저 초기화하고, 부모의 초기화 메소드를 이용해서 초기화를 수행합니다.
+  init(email: String, password: String, joinDate: Date, level: Int, exp: Int) {
+    self.email = email
+    self.password = password
+    self.level = level
+    self.exp = exp
+
+    super.init(joinDate: joinDate)
+  }
+}
+
+class Admin: Account {
+  let email: String
+  let password: String
+  var logs: [String]
+
+  init(email: String, password: String, joinDate: Date, logs: [String]) {
+    self.email = email
+    self.password = password
+    self.logs = logs
+
+    super.init(joinDate: joinDate)
+  }
+}
+
+class Guest: Account {
+  var level: Int
+  var exp: Int
+
+  init(joinDate: Date, level: Int, exp: Int) {
+    self.level = level
+    self.exp = exp
+
+    super.init(joinDate: joinDate)
+  }
+}
+
+let arr: [Account] = [
+  User(email: "chansik@gmail.com", password: "linux123", joinDate: Date(), level: 0, exp: 0),
+  Admin(email: "chansik@gmail.com", password: "linux123", joinDate: Date(), logs: []),
+  Guest(joinDate: Date(), level: 0, exp: 0)
+]
