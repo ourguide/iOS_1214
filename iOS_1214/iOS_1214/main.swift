@@ -78,3 +78,38 @@ let arr3 = [
 if let result = lowest(arr3) {
   print(result)
 }
+
+enum School {
+  case high
+  case elementary
+  case middle
+}
+
+let arr4: [School] = [
+  .high,
+  .middle,
+  .elementary,
+  .middle,
+  .high,
+  .elementary,
+]
+
+// Comparable의 구현을 제공하지 않을 경우, 순서에 따라서 자동으로 결정됩니다.
+extension School: Comparable {
+  static func < (lhs: School, rhs: School) -> Bool {
+    switch (lhs, rhs) {
+    case (elementary, middle):
+      return true
+    case (elementary, high):
+      return true
+    case (middle, high):
+      return true
+    default:
+      return false
+    }
+  }
+}
+
+if let result = lowest(arr4) {
+  print(result)
+}
