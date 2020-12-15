@@ -1,71 +1,117 @@
 
 import Foundation
 
-// "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-
-enum UserError: Error {
-  case noEmptyValueNotAllowed
-  case invalidEmail
+enum ParseLocationError: Error {
+  case invalidData
+  case network(String)
+  case locationDoesNotExist
 }
 
+struct Location {
+  let latitude: Double
+  let longitude: Double
+}
 
-struct User {
-  let email: String
-
-  // 타입 자체를 생성할 때 유효성을 체크하면, 이후의 오류 처리를 줄일 수 있다.
-  // - 실패의 원인이 여러개인 경우, 오류를 던지는 것이 좋습니다.
-  #if false
-  init(email: String) throws {
-    guard !email.isEmpty else {
-      throw UserError.noEmptyValueNotAllowed
-    }
-
-    let pattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-    if email.range(of: pattern, options: .regularExpression, range: nil, locale: nil) == nil {
-      throw UserError.invalidEmail
-    }
-
-    self.email = email
+func parseLocation(_ latitude: String, _ longitude: String) throws -> Location {
+  guard let latitude = Double(latitude), let longitude = Double(longitude) else {
+    // throw ParseLocationError.invalidData
+    throw ParseLocationError.network("인터넷 연결이 필요합니다.")
   }
-  #endif
-  
-  // - 실패의 원인이 1개 이면, Optional을 반환하는 것이 좋습니다.
-  init?(email: String) {
-    let pattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-    if email.range(of: pattern, options: .regularExpression, range: nil, locale: nil) == nil {
-      return nil
-    }
 
-    self.email = email
+  return Location(latitude: latitude, longitude: longitude)
+}
+
+#if true
+do {
+  let location = try parseLocation("3.14x", "4.8")
+  print(location)
+} catch let error as NSError {
+  print(error)
+  // ErrorHandler.default.handleError(error)
+}
+#endif
+
+// 오류에 추가적인 정보를 제공할 수 있습니다.
+extension ParseLocationError: LocalizedError {
+  var errorDescription: String? {
+    switch self {
+    case .invalidData:
+      return "잘못된 데이터 형식입니다."
+    case let .network(message):
+      return "네트워크 오류 입니다. - \(message)"
+    case .locationDoesNotExist:
+      return "존재하지 않는 위치 입니다."
+    }
+  }
+
+  var failureReason: String? {
+    switch self {
+    case .invalidData:
+      return "실패 이유: 잘못된 데이터 형식입니다."
+    case let .network(message):
+      return "실패 이유: 네트워크 오류 입니다. - \(message)"
+    case .locationDoesNotExist:
+      return "실패 이유: 존재하지 않는 위치 입니다."
+    }
+  }
+
+  var recoverySuggestion: String? {
+    return "재부팅하세요."
   }
 }
 
-if let user = User(email: "@gmail.com") {
-  print(user)
+// NSError가 출력되는 형식을 지정할 수 있습니다.
+extension ParseLocationError: CustomNSError {
+  static var errorDomain: String {
+    return "ParseLocationError"
+  }
+
+  var errorCode: Int {
+    switch self {
+    case .invalidData:
+      return 10
+    case .network:
+      return 11
+    case .locationDoesNotExist:
+      return 12
+    }
+  }
+
+  var errorUserInfo: [String: Any] {
+    return [
+      NSLocalizedDescriptionKey: errorDescription ?? "",
+      NSLocalizedFailureReasonErrorKey: failureReason ?? "",
+      NSLocalizedRecoverySuggestionErrorKey: recoverySuggestion ?? "",
+      "Hello": 42,
+    ]
+  }
 }
 
+// 오류 처리를 중앙 집중적으로 관리하면, 오류 처리의 중복된 코드를 한 곳에 모아서 관리할 수 있습니다.
+struct ErrorHandler {
+  // 키워드를 변수명으로 사용하기 위해서는 `default`를 이용하면 됩니다.
+  static let `default` = ErrorHandler()
 
+  func handleError(_ error: Error) {
+    print("****")
+    present("message: \(error)")
+  }
 
+  func handleError(_ error: LocalizedError) {
+    print("----")
+    present("message: \(error.localizedDescription)")
+  }
+
+  func present(_ message: String) {
+    print(message)
+  }
+}
 
 #if false
-// try
-//  : 예외를 catch 하거나 다시 외부로 전파할 수 있다.
 do {
-  let user: User = try User(email: "hello@gmail.com")
-  print(user)
-} catch {
-  print(error)
-}
-
-// try!
-//  : 예외가 발생하였 을 경우, 프로그램이 종료된다.
-//  - 주의해서 사용해야 합니다.
-let user1: User = try! User(email: "hello@gmail.com")
-print(user1)
-
-// try? - 오류가 발생하였을 경우, nil을 반환한다.
-//     => 반환 타입이 Optional이 된다.
-if let user2 = try? User(email: "hello@gmail.com") {
-  print(user2)
+  let location = try parseLocation("3.14x", "4.8")
+  print(location)
+} catch let error as LocalizedError {
+  ErrorHandler.default.handleError(error)
 }
 #endif
