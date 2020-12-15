@@ -121,6 +121,8 @@ class UIImage {}
 
 // Input: UIImage
 // Output: Bool
+
+#if false
 struct ImageCropper: Job {
   let size: CGSize
 
@@ -130,9 +132,34 @@ struct ImageCropper: Job {
   }
 }
 
+// 아래처럼 제네릭에 제약이 반복적으로 필요할 경우, 프로토콜 상속을 통해 편리하게 관리할 수 있습니다.
 struct ImageProcessor<J: Job> where J.Input == UIImage, J.Output == Bool {
   let job: J
-  
+
+  func start() {
+    let image = UIImage()
+    let result = job.start(input: image)
+    print("ImageProcessor - \(result)")
+  }
+}
+#endif
+
+protocol ImageJob: Job where Input == UIImage, Output == Bool {
+  // ...
+}
+
+struct ImageCropper: ImageJob {
+  let size: CGSize
+
+  func start(input: UIImage) -> Bool {
+    print("이미지 크롭 - \(size)")
+    return true
+  }
+}
+
+struct ImageProcessor<J: ImageJob> {
+  let job: J
+
   func start() {
     let image = UIImage()
     let result = job.start(input: image)
