@@ -48,6 +48,7 @@ func lowest<T>(_ array: [T]) -> T? where T: Comparable {
   return array.sorted().first
 }
 
+#if false
 let arr = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 if let result = lowest(arr) {
   print(result)
@@ -113,3 +114,81 @@ extension School: Comparable {
 if let result = lowest(arr4) {
   print(result)
 }
+#endif
+
+// 정렬된 값을 출력하고, 값의 발생 빈도를 출력합니다.
+#if false
+func printValues(_ values: [String]) {
+  print(values.sorted())
+
+  var result = [String: Int]()
+  for e in values {
+    let v = result[e] ?? 0
+    result[e] = v + 1
+  }
+
+  print(result)
+}
+#endif
+
+// 제약을 여러개 지정하는 것도 가능합니다.
+// func printValues<T: Comparable & Hashable>(_ values: [T]) {
+func printValues<T>(_ values: [T]) where T: Comparable & Hashable {
+  print(values.sorted())
+
+  var result = [T: Int]()
+  for e in values {
+    let v = result[e] ?? 0
+    result[e] = v + 1
+  }
+
+  print(result)
+}
+
+// Java(Kotlin)에서는 Map의 Key로 사용하기 위해서는
+// 두 개의 메소드가 중요합니다.
+//  - hashCode
+//  - equals
+
+// => Hashable 프로토콜은 Equatable 프로토콜을 포함합니다.
+
+struct User: Comparable, Hashable {
+  let name: String
+  let age: Int
+
+  static func < (lhs: User, rhs: User) -> Bool {
+    return lhs.name < rhs.name
+  }
+
+  // 구조체는 Hashable / Equtable 을 자동으로 제공해줍니다.
+  #if false
+  // hash 제공하는 것도 가능합니다.
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(name)
+    hasher.combine(age)
+  }
+
+  static func == (lhs: User, rhs: User) -> Bool {
+    return lhs.name == rhs.name && lhs.age == rhs.age
+  }
+  #endif
+}
+
+let arr = [
+  "hello",
+  "world",
+  "show",
+  "me",
+  "hello",
+  "world",
+]
+
+printValues(arr)
+
+let arr2 = [
+  User(name: "Tom", age: 42),
+  User(name: "Bob", age: 35),
+  User(name: "Zlice", age: 17),
+]
+
+printValues(arr2)
