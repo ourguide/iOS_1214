@@ -72,6 +72,9 @@ let scores = [
 //    "B": 2
 //     ....
 
+// let a: [Int] = [ ]           // 빈 배열
+// let b: [String: Any] = [:]   // 빈 사전
+
 // 주의사항
 //  : 요소의 개수가 많을 경우, temp = result 복사 비용이 증가할 수 있다.
 let stat1 = scores.reduce([:]) { (result: [Character: Int], score: Int) -> [Character: Int] in
@@ -95,6 +98,8 @@ let stat1 = scores.reduce([:]) { (result: [Character: Int], score: Int) -> [Char
 
 print(stat1)
 
+// 복사의 비용이 발생하지 않습니다.
+// => 반환할 필요가 없습니다.
 let stat2 = scores.reduce(into: [:]) { (result: inout [Character: Int], score: Int) in
   switch score {
   case 0 ..< 70:
@@ -111,3 +116,27 @@ let stat2 = scores.reduce(into: [:]) { (result: inout [Character: Int], score: I
 }
 
 print(stat2)
+
+// let a = []
+// 1)
+let a: [Int] = []
+// 2)
+let b = [Int]()
+
+// let c = [:]
+
+let c: [String: Int] = [:]
+let d = [String: Int]()
+
+print("---------")
+
+// - zip
+//  => 두 개의 반복자를 통해 데이터를 묶을 수 있습니다.
+//     하나의 반복자가 종료되면, zip 연산은 중지 됩니다.
+
+let numbers = 0 ..< 10
+let grades = ["A", "B", "C", "D"]
+
+for (number, grade) in zip(numbers, grades) {
+  print("No \(number). \(grade)")
+}
