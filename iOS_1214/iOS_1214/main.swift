@@ -71,7 +71,6 @@ class DirRemover: Job {
 // ]
 
 // => Job를 사용하는 코드를 만들때, 컴파일 타임 다형성을 사용해야 합니다.
-
 func runJob<J: Job>(job: J, inputs: [J.Input]) {
   for input in inputs {
     _ = job.start(input: input)
@@ -85,3 +84,33 @@ let emails = [
 ]
 
 runJob(job: MailJob(), inputs: emails)
+
+struct User {
+  let email: String
+}
+
+func runJob<J: Job>(job: J, inputs: [J.Input]) where J.Input == User {
+  for input in inputs {
+    print(input.email) // J.Input 타입은 User이기 때문에, User의 고유 프로퍼티에 접근이 가능합니다.
+    _ = job.start(input: input)
+  }
+}
+
+let users = [
+  User(email: "hello1@gmail.com"),
+  User(email: "hello2@gmail.com"),
+  User(email: "hello3@gmail.com"),
+]
+
+class UserMailJob: Job {
+  typealias Input = User
+  typealias Output = Bool
+
+  @discardableResult
+  func start(input: User) -> Bool {
+    print("UserMailJob start - \(input.email)")
+    return true
+  }
+}
+
+runJob(job: UserMailJob(), inputs: users)
