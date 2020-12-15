@@ -45,13 +45,7 @@ func lowest<T: Comparable>(_ array: [T]) -> T? {
 // 표시 방법 2.
 //   where T: Comparable
 func lowest<T>(_ array: [T]) -> T? where T: Comparable {
-  // 1) 오름차순 정렬
-  let sorted = array.sorted { (lhs, rhs) -> Bool in
-    lhs < rhs
-  }
-
-  // 2) 오름차순 정렬된 배열의 첫번째 원소 반환
-  return sorted.first
+  return array.sorted().first
 }
 
 let arr = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
@@ -64,3 +58,23 @@ if let result = lowest(arr2) {
   print(result)
 }
 
+struct User: Comparable {
+  let name: String
+  let age: Int
+
+  static func < (lhs: User, rhs: User) -> Bool {
+    // return lhs.age < rhs.age
+    return lhs.name < rhs.name
+  }
+}
+
+let arr3 = [
+  User(name: "Tom", age: 42),
+  User(name: "Bob", age: 35),
+  User(name: "Zlice", age: 17),
+]
+
+// Global function 'lowest' requires that 'User' conform to 'Comparable'
+if let result = lowest(arr3) {
+  print(result)
+}
