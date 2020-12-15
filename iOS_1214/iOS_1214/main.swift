@@ -80,9 +80,8 @@ print(repeated[3])
 #if false
 public protocol Collection: Sequence {
   associatedtype Element
-
-  associatedtype Index: Comparable where Self.Index == Self.Indices.Element, Self.Indices.Element == Self.Indices.Index, Self.Indices.Index == Self.SubSequence.Index, Self.SubSequence.Index == Self.Indices.Indices.Element, Self.Indices.Indices.Element == Self.Indices.Indices.Index, Self.Indices.Indices.Index == Self.SubSequence.Indices.Element, Self.SubSequence.Indices.Element == Self.SubSequence.Indices.Index, Self.SubSequence.Indices.Index == Self.Indices.Indices.Indices.Element, Self.Indices.Indices.Indices.Element == Self.Indices.Indices.Indices.Index, Self.Indices.Indices.Indices.Index == Self.SubSequence.Indices.Indices.Element, Self.SubSequence.Indices.Indices.Element == Self.SubSequence.Indices.Indices.Index, Self.SubSequence.Indices.Indices.Index == Self.SubSequence.Indices.Indices.Indices.Element, Self.SubSequence.Indices.Indices.Indices.Element == Self.SubSequence.Indices.Indices.Indices.Index
-
+  associatedtype Index
+  
   var startIndex: Self.Index { get }
   var endIndex: Self.Index { get }
 
