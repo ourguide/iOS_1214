@@ -83,4 +83,19 @@ do {
   print("알 수 없는 오류 - \(error)")
 }
 
+// 8. 스위프트는 finally(예외가 발생하든 발생하지 않든 무조건 실행되어야 하는 동작)가 존재하지 않습니다.
+//  - defer를 이용하면, finally 역활을 수행할 수 있습니다.
+func foo() throws {
+  defer {
+    print("자원 해제")
+  }
 
+  do {
+    let location = try parseLocation("3.14", "4.8")
+    print(location)
+  } catch {
+    throw error
+  }
+}
+
+try foo()
