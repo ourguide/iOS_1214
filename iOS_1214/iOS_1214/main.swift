@@ -105,11 +105,11 @@ let bag3: Bag<Int> = [
 
 extension Bag: ExpressibleByArrayLiteral {
   typealias ArrayLiteralElement = Element
-  
+
   init(arrayLiteral elements: Element...) {
-    store = elements.reduce(into: [:], { (store, element) in
+    store = elements.reduce(into: [:]) { store, element in
       store[element, default: 0] += 1
-    })
+    }
   }
 }
 
