@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7AC0D76D258878D200207F42 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC0D76C258878D200207F42 /* main.swift */; };
+		7AC0D771258886EF00207F42 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC0D770258886EF00207F42 /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,7 +45,8 @@
 		7A53CDD12587561F0074796E /* 0_질의응답.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "0_질의응답.swift"; sourceTree = "<group>"; };
 		7AC0D76325885E8300207F42 /* 8_제네릭3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "8_제네릭3.swift"; sourceTree = "<group>"; };
 		7AC0D7672588621400207F42 /* 9_프로토콜.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "9_프로토콜.swift"; sourceTree = "<group>"; };
-		7AC0D76C258878D200207F42 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		7AC0D76C258878D200207F42 /* 9_프로토콜2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "9_프로토콜2.swift"; sourceTree = "<group>"; };
+		7AC0D770258886EF00207F42 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +100,8 @@
 				7A266A902588505C002B84E7 /* 8_제네릭2.swift */,
 				7AC0D76325885E8300207F42 /* 8_제네릭3.swift */,
 				7AC0D7672588621400207F42 /* 9_프로토콜.swift */,
-				7AC0D76C258878D200207F42 /* main.swift */,
+				7AC0D76C258878D200207F42 /* 9_프로토콜2.swift */,
+				7AC0D770258886EF00207F42 /* main.swift */,
 			);
 			path = iOS_1214;
 			sourceTree = "<group>";
@@ -162,7 +164,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7AC0D76D258878D200207F42 /* main.swift in Sources */,
+				7AC0D771258886EF00207F42 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

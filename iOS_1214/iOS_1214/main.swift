@@ -1,172 +1,108 @@
 
-
 import Foundation
 
-#if false
-protocol Job {
-  func start(input: String) -> Bool
+let names = ["Tom", "Bob", "Alice"]
+for name in names {
+  print(name)
 }
 
-// 프로토콜은 제네릭 파라미터를 허용하지 않습니다.
-// => 프로토콜 관계 타입을 사용해야 합니다. => PAT(Protocol Associated Type)
-// protocol Job<Input, Output> {
-//  func start(input: Input) -> Output
-// }
-#endif
+// 위의 코드는 아래와 동일한 표현입니다.
+// - Iterator
+print("-------")
 
-#if true
-protocol Job {
-  associatedtype Input
-  associatedtype Output
-
-  func start(input: Input) -> Output
+var iterator = names.makeIterator()
+// 데이터를 전달하고, 다음 요소로 이동합니다.
+// 데이터가 없을 경우 nil을 반환합니다.
+while let name = iterator.next() {
+  print(name)
 }
 
-class MailJob: Job {
-  // 명시적으로 PAT를 지정 하는 방법
-  // => 생략하였을 경우, 컴파일러가 추론 가능하면, 자동으로 추론됩니다.
-  typealias Input = String
-  typealias Output = Bool
+print("--------")
 
-  @discardableResult
-  func start(input: String) -> Bool {
-    print("MailJob start - \(input)")
-    return true
+// 사용자가 설계한 자료구조를 순회하기 위해서는,
+//  두 개의 프로토콜을 이해해야 합니다.
+//  - 컬렉션을 순회하는 객체에 대한 프로토콜    - IteratorProtocol => SingleListIterator
+//  - 컬렉션에서 반복자를 꺼낼 수 있는 프로토콜  - Sequence
+
+class Node<E> {
+  var value: E
+  var next: Node<E>?
+
+  init(value: E, next: Node<E>?) {
+    self.value = value
+    self.next = next
   }
 }
 
-let job = MailJob()
-// job.start(input: "hello")
+// SingleList를 순회하는 객체 - IteratorProtocol
+#if false
+public protocol IteratorProtocol {
+  associatedtype Element
+  mutating func next() -> Self.Element?
+}
+#endif
 
-// 문제점
-//  - Input과 Output의 타입이 다른 경우가 있습니다.
-class DirRemover: Job {
-  typealias Input = URL
-  typealias Output = [String]
+struct SingleListIterator<E>: IteratorProtocol {
+  var current: Node<E>?
 
-  func start(input: URL) -> [String] {
-    do {
-      var results = [String]()
-      let fileManager = FileManager.default
-      let fileUrls = try fileManager.contentsOfDirectory(at: input, includingPropertiesForKeys: nil)
+  typealias Element = E
 
-      for file in fileUrls {
-        try fileManager.removeItem(at: file)
-        results.append(file.absoluteString)
-      }
-
-      return results
-
-    } catch {
-      print("Error - \(error)")
-      return []
+  mutating func next() -> E? {
+    defer {
+      current = current?.next
     }
+
+    return current?.value
+  }
+
+  init(_ current: Node<E>?) {
+    self.current = current
   }
 }
-
-// PAT를 사용하면, Protocol에 컴파일 타임에 내부 타입을 결정할 수 있습니다.
-// => PAT를 사용하면, 런타임 다형성을 지원하지 않습니다.
-// let jobs: [Job] = [
-//   MailJob(),
-//   DirRemover(),
-// ]
-
-// => Job를 사용하는 코드를 만들때, 컴파일 타임 다형성을 사용해야 합니다.
-func runJob<J: Job>(job: J, inputs: [J.Input]) {
-  for input in inputs {
-    _ = job.start(input: input)
-  }
-}
-
-let emails = [
-  "hello1@gmail.com",
-  "hello2@gmail.com",
-  "hello3@gmail.com",
-]
-
-// runJob(job: MailJob(), inputs: emails)
-
-struct User {
-  let email: String
-}
-
-func runJob<J: Job>(job: J, inputs: [J.Input]) where J.Input == User {
-  for input in inputs {
-    print(input.email) // J.Input 타입은 User이기 때문에, User의 고유 프로퍼티에 접근이 가능합니다.
-    _ = job.start(input: input)
-  }
-}
-
-let users = [
-  User(email: "hello1@gmail.com"),
-  User(email: "hello2@gmail.com"),
-  User(email: "hello3@gmail.com"),
-]
-
-class UserMailJob: Job {
-  typealias Input = User
-  typealias Output = Bool
-
-  @discardableResult
-  func start(input: User) -> Bool {
-    print("UserMailJob start - \(input.email)")
-    return true
-  }
-}
-
-// runJob(job: UserMailJob(), inputs: users)
-#endif
-
-class UIImage {}
-
-// Input: UIImage
-// Output: Bool
 
 #if false
-struct ImageCropper: Job {
-  let size: CGSize
+public protocol Sequence {
+  associatedtype Iterator: IteratorProtocol
 
-  func start(input: UIImage) -> Bool {
-    print("이미지 크롭 - \(size)")
-    return true
-  }
-}
-
-// 아래처럼 제네릭에 제약이 반복적으로 필요할 경우, 프로토콜 상속을 통해 편리하게 관리할 수 있습니다.
-struct ImageProcessor<J: Job> where J.Input == UIImage, J.Output == Bool {
-  let job: J
-
-  func start() {
-    let image = UIImage()
-    let result = job.start(input: image)
-    print("ImageProcessor - \(result)")
-  }
+  func makeIterator() -> Self.Iterator
 }
 #endif
 
-protocol ImageJob: Job where Input == UIImage, Output == Bool {
-  // ...
-}
+struct SingleList<E>: Sequence {
+  // -----
+  func makeIterator() -> SingleListIterator<E> {
+    return SingleListIterator(head)
+  }
 
-struct ImageCropper: ImageJob {
-  let size: CGSize
+  typealias Iterator = SingleListIterator<E>
+  // -----
 
-  func start(input: UIImage) -> Bool {
-    print("이미지 크롭 - \(size)")
-    return true
+  var head: Node<E>?
+
+  mutating func append(_ element: E) {
+    head = Node(value: element, next: head)
+  }
+
+  func firstElement() -> E? {
+    return head?.value
   }
 }
 
-struct ImageProcessor<J: ImageJob> {
-  let job: J
+var list = SingleList<Int>()
+list.append(10)
+list.append(20)
+list.append(30)
 
-  func start() {
-    let image = UIImage()
-    let result = job.start(input: image)
-    print("ImageProcessor - \(result)")
-  }
+// if let value = list.firstElement() {
+//  print(value)
+// }
+
+var iterator2 = list.makeIterator()
+while let value = iterator2.next() {
+  print(value)
 }
 
-let cropper = ImageCropper(size: CGSize(width: 100, height: 200))
-let processor = ImageProcessor(job: cropper)
-processor.start()
+print("--------")
+for value in list {
+  print(value)
+}
