@@ -14,6 +14,7 @@ protocol Job {
 // }
 #endif
 
+#if true
 protocol Job {
   associatedtype Input
   associatedtype Output
@@ -35,7 +36,7 @@ class MailJob: Job {
 }
 
 let job = MailJob()
-job.start(input: "hello")
+// job.start(input: "hello")
 
 // 문제점
 //  - Input과 Output의 타입이 다른 경우가 있습니다.
@@ -83,7 +84,7 @@ let emails = [
   "hello3@gmail.com",
 ]
 
-runJob(job: MailJob(), inputs: emails)
+// runJob(job: MailJob(), inputs: emails)
 
 struct User {
   let email: String
@@ -113,4 +114,32 @@ class UserMailJob: Job {
   }
 }
 
-runJob(job: UserMailJob(), inputs: users)
+// runJob(job: UserMailJob(), inputs: users)
+#endif
+
+class UIImage {}
+
+// Input: UIImage
+// Output: Bool
+struct ImageCropper: Job {
+  let size: CGSize
+
+  func start(input: UIImage) -> Bool {
+    print("이미지 크롭 - \(size)")
+    return true
+  }
+}
+
+struct ImageProcessor<J: Job> where J.Input == UIImage, J.Output == Bool {
+  let job: J
+  
+  func start() {
+    let image = UIImage()
+    let result = job.start(input: image)
+    print("ImageProcessor - \(result)")
+  }
+}
+
+let cropper = ImageCropper(size: CGSize(width: 100, height: 200))
+let processor = ImageProcessor(job: cropper)
+processor.start()
