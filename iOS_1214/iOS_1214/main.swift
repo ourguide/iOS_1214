@@ -62,3 +62,26 @@ class DirRemover: Job {
     }
   }
 }
+
+// PAT를 사용하면, Protocol에 컴파일 타임에 내부 타입을 결정할 수 있습니다.
+// => PAT를 사용하면, 런타임 다형성을 지원하지 않습니다.
+// let jobs: [Job] = [
+//   MailJob(),
+//   DirRemover(),
+// ]
+
+// => Job를 사용하는 코드를 만들때, 컴파일 타임 다형성을 사용해야 합니다.
+
+func runJob<J: Job>(job: J, inputs: [J.Input]) {
+  for input in inputs {
+    _ = job.start(input: input)
+  }
+}
+
+let emails = [
+  "hello1@gmail.com",
+  "hello2@gmail.com",
+  "hello3@gmail.com",
+]
+
+runJob(job: MailJob(), inputs: emails)
