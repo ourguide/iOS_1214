@@ -3,7 +3,7 @@ import Foundation
 
 //                Sequence
 //                    |
-//                Collection
+//                Collection - []
 //                    |
 //      +-------------+------------------------------------+
 //      |                     |                            |
