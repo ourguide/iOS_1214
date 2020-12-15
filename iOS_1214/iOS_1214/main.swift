@@ -24,8 +24,8 @@ func parseLocation(_ latitude: String, _ longitude: String) throws -> Location {
 do {
   let location = try parseLocation("3.14x", "4.8")
   print(location)
-} catch let error as NSError {
-  print(error)
+} catch let error as LocalizedError {
+  ErrorHandler.default.handleError(error)
 }
 
 // 오류에 추가적인 정보를 제공할 수 있습니다.
@@ -81,5 +81,25 @@ extension ParseLocationError: CustomNSError {
       NSLocalizedRecoverySuggestionErrorKey: recoverySuggestion ?? "",
       "Hello": 42,
     ]
+  }
+}
+
+// 오류 처리를 중앙 집중적으로 관리하면, 오류 처리의 중복된 코드를 한 곳에 모아서 관리할 수 있습니다.
+struct ErrorHandler {
+  // 키워드를 변수명으로 사용하기 위해서는 `default`를 이용하면 됩니다.
+  static let `default` = ErrorHandler()
+
+  func handleError(_ error: Error) {
+    print("****")
+    present("message: \(error)")
+  }
+
+  func handleError(_ error: LocalizedError) {
+    print("----")
+    present("message: \(error.localizedDescription)")
+  }
+
+  func present(_ message: String) {
+    print(message)
   }
 }
