@@ -6,19 +6,19 @@ import Foundation
 struct Bag<Element: Hashable> {
   // private var store = [Element: Int]()
   private var store: [Element: Int] = [:]
-  
+
   mutating func insert(_ element: Element) {
     store[element, default: 0] += 1
   }
-  
+
   mutating func remove(_ element: Element) {
     store[element, default: 0] -= 1
-    
+
     if store[element] == 0 {
       store[element] = nil
     }
   }
-  
+
   var count: Int {
     return store.values.reduce(0, +)
   }
@@ -36,12 +36,63 @@ for e in text {
 
 print(bag1.count)
 
-
 var bag2 = Bag<String>()
-let data = [ "Tom", "Bob", "Alice", "Alice", "Bob" ]
+let data = ["Tom", "Bob", "Alice", "Alice", "Bob"]
 
 for e in data {
   bag2.insert(e)
 }
 
 print(bag2.count)
+
+// 구현 방법 1.
+#if false
+struct BagIterator<Element: Hashable>: IteratorProtocol {
+  var store = [Element: Int]()
+
+  mutating func next() -> Element? {
+    guard let (key, value) = store.first else {
+      return nil
+    }
+
+    if value > 1 {
+      store[key]? -= 1
+    } else {
+      store[key] = nil
+    }
+
+    return key
+  }
+}
+
+extension Bag: Sequence {
+  func makeIterator() -> BagIterator<Element> {
+    return BagIterator(store: store)
+  }
+}
+#endif
+
+extension Bag: Sequence {
+  func makeIterator() -> AnyIterator<Element> {
+    var store = self.store
+
+    return AnyIterator {
+      guard let (key, value) = store.first else {
+        return nil
+      }
+
+      if value > 1 {
+        store[key]? -= 1
+      } else {
+        store[key] = nil
+      }
+
+      return key
+    }
+  }
+}
+
+print("------------")
+for e in bag2 {
+  print(e)
+}
