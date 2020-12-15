@@ -161,6 +161,7 @@ struct User: Comparable, Hashable {
   }
 
   // 구조체는 Hashable / Equtable 을 자동으로 제공해줍니다.
+  // => 내부의 프로퍼티가 Hashsable / Equtable을 만족해야 한다.
   #if false
   // hash 제공하는 것도 가능합니다.
   func hash(into hasher: inout Hasher) {
@@ -192,3 +193,19 @@ let arr2 = [
 ]
 
 printValues(arr2)
+
+struct Pair<T: Hashable, U: Hashable>: Hashable {
+  let left: T
+  let right: U
+
+  init(_ left: T, _ right: U) {
+    self.left = left
+    self.right = right
+  }
+}
+
+let pair = Pair("Tom", 42)
+let dic = [pair: "User"]
+
+print(pair)
+print(dic)
