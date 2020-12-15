@@ -2,11 +2,10 @@
 import Foundation
 
 // Sequence 프로토콜을 구현하는 컬렉션은 다양한 기능을 사용할 수 있습니다.
-//  - map
-//  - filter
-//  - sorted
-//  - filtered
-//  - shuffled
+//  - map: 데이터를 변환한다.
+//  - sorted: 데이터를 정렬한다.
+//  - filtered: 데이터를 필터한다.
+//  - shuffled: 데이터를 섞는다.
 
 //  - lazy: 대규모 데이터를 처리할 때 유용합니다.
 //    1) 중첩된 클로저의 연산이 저장된다.
@@ -32,6 +31,83 @@ let result = arr
     e.isMultiple(of: 22)
   }.suffix(3)
 
-for e in result {
-  print(e)
+// for e in result {
+//  print(e)
+// }
+
+// - reduce: 여러 요소를 통해 하나의 결과를 도출한다.
+let text = """
+hello
+world
+show
+me
+the
+money
+
+"""
+
+let newlineCount = text.reduce(0) { (sum: Int, char: Character) -> Int in
+  if char == "\n" {
+    return sum + 1
+  } else {
+    return sum
+  }
 }
+
+print(newlineCount)
+
+let scores = [
+  77,
+  65,
+  80,
+  92,
+  100,
+  80,
+  92,
+  100,
+  77,
+]
+// [ Character: Int ]
+//  - "A": 3,
+//    "B": 2
+//     ....
+
+// 주의사항
+//  : 요소의 개수가 많을 경우, temp = result 복사 비용이 증가할 수 있다.
+let stat1 = scores.reduce([:]) { (result: [Character: Int], score: Int) -> [Character: Int] in
+  var temp = result
+
+  switch score {
+  case 0 ..< 70:
+    temp["D", default: 0] += 1
+  case 70 ..< 80:
+    temp["C", default: 0] += 1
+  case 80 ..< 90:
+    temp["B", default: 0] += 1
+  case 90...:
+    temp["A", default: 0] += 1
+  default:
+    break
+  }
+
+  return temp
+}
+
+print(stat1)
+
+let stat2 = scores.reduce(into: [:]) { (result: inout [Character: Int], score: Int) in
+  switch score {
+  case 0 ..< 70:
+    result["D", default: 0] += 1
+  case 70 ..< 80:
+    result["C", default: 0] += 1
+  case 80 ..< 90:
+    result["B", default: 0] += 1
+  case 90...:
+    result["A", default: 0] += 1
+  default:
+    break
+  }
+}
+
+print(stat2)
