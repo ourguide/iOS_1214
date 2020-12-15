@@ -98,6 +98,7 @@ list.append(30)
 // }
 
 var iterator2 = list.makeIterator()
+print(type(of: iterator2))
 while let value = iterator2.next() {
   print(value)
 }
@@ -106,3 +107,23 @@ print("--------")
 for value in list {
   print(value)
 }
+
+// Sequence / IteratorProtocol을 만족하면 다양한 기능을 사용할 수 있습니다.
+let arr = list.sorted()
+print(arr)
+
+list.forEach { (e) in
+  print(e)
+}
+
+let result = list.map { e in
+  return e * 10
+}
+print(result)
+
+let result2 = list.filter { e -> Bool in
+  e % 4 == 0
+}
+print(result2)
+
+
