@@ -45,7 +45,7 @@ for e in data {
 
 print(bag2.count)
 
-// 구현 방법 1.
+// 구현 방법 1. 직접 반복자 타입을 정의하는 방법
 #if false
 struct BagIterator<Element: Hashable>: IteratorProtocol {
   var store = [Element: Int]()
@@ -72,6 +72,7 @@ extension Bag: Sequence {
 }
 #endif
 
+// 구현 방법 2. AnyIterator를 이용하는 방법
 extension Bag: Sequence {
   func makeIterator() -> AnyIterator<Element> {
     var store = self.store
@@ -96,3 +97,20 @@ print("------------")
 for e in bag2 {
   print(e)
 }
+
+// 배열 리터럴을 지원하고 싶습니다. - ExpressibleByArrayLiteral
+let bag3: Bag<Int> = [
+  10, 20, 30, 40, 10, 30, 20, 40
+]
+
+extension Bag: ExpressibleByArrayLiteral {
+  typealias ArrayLiteralElement = Element
+  
+  init(arrayLiteral elements: Element...) {
+    store = elements.reduce(into: [:], { (store, element) in
+      store[element, default: 0] += 1
+    })
+  }
+}
+
+print(bag3)
