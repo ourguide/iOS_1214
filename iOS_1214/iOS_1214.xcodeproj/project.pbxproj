@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7AC0D76425885E8300207F42 /* 8_제네릭3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC0D76325885E8300207F42 /* 8_제네릭3.swift */; };
+		7AC0D7682588621400207F42 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AC0D7672588621400207F42 /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,6 +44,7 @@
 		7A53CDCC25873ED70074796E /* 6_초기화메소드.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "6_초기화메소드.swift"; sourceTree = "<group>"; };
 		7A53CDD12587561F0074796E /* 0_질의응답.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "0_질의응답.swift"; sourceTree = "<group>"; };
 		7AC0D76325885E8300207F42 /* 8_제네릭3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "8_제네릭3.swift"; sourceTree = "<group>"; };
+		7AC0D7672588621400207F42 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +97,7 @@
 				7A266A8C25884D40002B84E7 /* 8_제네릭.swift */,
 				7A266A902588505C002B84E7 /* 8_제네릭2.swift */,
 				7AC0D76325885E8300207F42 /* 8_제네릭3.swift */,
+				7AC0D7672588621400207F42 /* main.swift */,
 			);
 			path = iOS_1214;
 			sourceTree = "<group>";
@@ -158,7 +160,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7AC0D76425885E8300207F42 /* 8_제네릭3.swift in Sources */,
+				7AC0D7682588621400207F42 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
