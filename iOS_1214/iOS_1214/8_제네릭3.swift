@@ -32,3 +32,14 @@ struct Container<T> {}
 
 // let truck: Container<Truck> = Container<Truck>()
 // let car2: Container<Car> = truck
+
+
+// Optional<T>
+//    |
+//    T
+
+// Optional 타입은 T 타입의 부모로 취급합니다.
+
+var a: Int = 30
+var b: Int? = a
+
