@@ -59,7 +59,29 @@ struct NaverRequestBuilder: RequestBuilder {
   let baseURL = URL(string: "https://api.naver.com")!
 }
 
-let requestBuidler = GithubRequestBuilder()
-let request = requestBuidler.makeRequest(path: "/users")
+// let requestBuidler = GithubRequestBuilder()
+// let request = requestBuidler.makeRequest(path: "/users")
 
-print(request)
+protocol ResponseHandler {
+  func validate(response: URLResponse) throws
+}
+
+enum ResponseError: Error {
+  case invalidResponse
+}
+
+extension ResponseHandler {
+  func validate(response: URLResponse) throws {
+    guard response is HTTPURLResponse else {
+      throw ResponseError.invalidResponse
+    }
+  }
+}
+
+struct GithubAPI: RequestBuilder, ResponseHandler {
+  let baseURL = URL(string: "https://api.github.com")!
+}
+
+let api = GithubAPI()
+let request = api.makeRequest(path: "/users")
+// api.validate(response: )
