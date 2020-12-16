@@ -107,7 +107,6 @@ let dic = Dictionary(commitsPerUser) { name, _ in
 }
 
 // print(dic)
-
 func removeEmojis(_ string: String) -> String {
   var scalars = string.unicodeScalars
   scalars.removeAll {
@@ -118,5 +117,19 @@ func removeEmojis(_ string: String) -> String {
 }
 
 // Emoji: Command + Ctrl + Space
-let message = "Hello,🧐 world show 🧐me 🧐the money🧐"
-print(removeEmojis(message))
+
+// Optional 안에 있는 값을 변환하는 작업이 번거롭다.
+var message: String? = "Hello,🧐 world show 🧐me 🧐the money🧐"
+if let str = message {
+  message = removeEmojis(str)
+}
+
+// Optional 안의 값이 존재할 경우, 변환하는 연산을 제공합니다 - map
+message = message.map {
+  removeEmojis($0)
+}
+
+print(message)
+
+
+
