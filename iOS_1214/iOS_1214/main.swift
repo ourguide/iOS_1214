@@ -1,94 +1,43 @@
 
 import Foundation
 
-// Protocol
-//  - 상속(Inheritance) / 합성(Composition)
+// 어떤 함수가 호출될지 정확하게 파악하는 것이 중요합니다.
 
-struct MailAddress {
-  let value: String
+protocol Plant {
+  func grow()
 }
 
-struct Email {
-  let subject: String
-  let body: String
-  let to: [MailAddress]
-  let from: MailAddress
-}
-
-protocol Mailer {
-  func send(email: Email) throws
-}
-
-extension Mailer {
-  func send(email: Email) {
-    print("Mailer: mail sent - \(email)")
+extension Plant {
+  func grow() {
+    print("Plant - grow()")
   }
 }
 
-protocol MailValidator {
-  func validate(email: Email) throws
-}
+protocol Tree: Plant {}
 
-extension MailValidator {
-  func validate(email: Email) throws {
-    print("MailValidator - \(email) is valid!!")
+extension Tree {
+  func grow() {
+    print("Tree - grow()")
   }
 }
 
-// ----------
-
-// MailValidator를 만족하는 타입이 Mailer의 프로토콜도 만족하고 있다면...
-extension MailValidator where Self: Mailer {
-  func send2(email: Email) throws {
-    try validate(email: email)
-
-    try send(email: email)
+struct Oak: Tree {
+  func grow() {
+    print("Oak - grow()")
   }
 }
 
-struct SMTPClient: Mailer, MailValidator {}
+struct CherryTree: Tree {}
+struct KiwiPlant: Plant {}
 
-let client = SMTPClient()
-try client.send2(email: Email(subject: "Hello",
-                              body: "Hello world",
-                              to: [MailAddress(value: "hello@gmail.com")],
-                              from: MailAddress(value: "test@gmail.com")))
+//        Plant - KiwiPlant
+//          |
+//         Tree - Oak / CherryTree
 
-extension MailValidator where Self: Mailer {
-  func send(email: Email, at: Date) throws {
-    try validate(email: email)
-
-    try send(email: email)
-  }
+func grow<P: Plant>(_ plant: P) {
+  plant.grow()
 }
 
-func submitEmail<T>(sender: T, email: Email) where T: Mailer, T: MailValidator {
-  try! sender.send(email: email, at: Date())
-}
-
-// 상속
-#if false
-protocol ValidatingMailer: Mailer {
-  func validate(email: Email) throws
-}
-
-extension ValidatingMailer {
-  func send(email: Email) throws {
-    try validate(email: email)
-
-    print("ValidatingMailer: mail sent!")
-  }
-
-  func validate(email: Email) throws {
-    print("ValidatingMailer: mail is valid!")
-  }
-}
-
-struct SMTPClient: ValidatingMailer {}
-
-let client = SMTPClient()
-try client.send(email: Email(subject: "Hello",
-                             body: "Hello world",
-                             to: [MailAddress(value: "hello@gmail.com")],
-                             from: MailAddress(value: "test@gmail.com")))
-#endif
+grow(Oak())
+grow(CherryTree())
+grow(KiwiPlant())
