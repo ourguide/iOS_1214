@@ -1,73 +1,39 @@
 
 import Foundation
 
-// interface
-protocol Shape {
-  // func draw()
+// Extension을 사용할 때 주의할 점
+
+class UIViewController {}
+
+#if false
+// 원하지 않는 사용자들도, UIViewController에 track이 추가된다.
+// => 함부로 추가되면 안됩니다!
+extension UIViewController {
+  func track(event: String, parameters: [String: Any]) {
+    print("UIViewController 이벤트 추적")
+  }
+}
+#endif
+
+// 스위프트에서는 이 문제를 해결할 수 있습니다.
+
+protocol AnalyticsProtocol {
+  func track(event: String, parameters: [String: Any])
 }
 
-// 아래 코드 때문에 정적 바인딩이 아닙니다.
-//  - 약속된 draw 메소드에 대한 기본 구현을 제공합니다.
-extension Shape {
-  func draw() {
-    print("Shape draw")
+// 제약을 추가하면 UIViewController 에서만 사용할 수 있습니다.
+// => 아래의 기본 구현은 UIViewController가 AnalyticsProtocol을 명시적으로 구현해야만 노출됩니다.
+extension AnalyticsProtocol where Self: UIViewController {
+  func track(event: String, parameters: [String: Any]) {
+    print("AnalyticsProtocol - 이벤트 추적")
   }
 }
 
-struct Rect: Shape {
-  func draw() {
-    print("Rect draw")
+class MyViewController: UIViewController, AnalyticsProtocol {
+  func viewDidLoad() {
+    // super.viewDidLoad()
+
+    track(event: "view open", parameters: [:])
   }
 }
 
-struct Circle: Shape {
-  func draw() {
-    print("Circle draw")
-  }
-}
-
-let shapes: [Shape] = [
-  Rect(),
-  Circle()
-]
-
-for shape in shapes {
-  shape.draw()
-}
-
-// ----------
-protocol Plant {
-  // func grow()
-}
-
-extension Plant {
-  func grow() {
-    print("Plant - grow()")
-  }
-}
-
-protocol Tree: Plant {}
-
-extension Tree {
-  func grow() {
-    print("Tree - grow()")
-  }
-}
-
-struct Oak: Tree {
-  // Shadowing
-  func grow() {
-    print("Oak - grow()")
-  }
-}
-
-struct CherryTree: Tree {}
-struct KiwiPlant: Plant {}
-
-// func grow<P: Plant>(_ plant: P) {
-//  plant.grow()
-// }
-
-Oak().grow()
-CherryTree().grow()
-KiwiPlant().grow()
