@@ -42,7 +42,7 @@ extension MailValidator where Self: Mailer {
   func send(email: Email) throws {
     try validate(email: email)
 
-    // try send(email: email)
+    try send(email: email)
   }
 }
 

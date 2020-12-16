@@ -1,10 +1,43 @@
 
 import Foundation
 
-// 어떤 함수가 호출될지 정확하게 파악하는 것이 중요합니다.
+// interface
+protocol Shape {
+  // func draw()
+}
 
+// 아래 코드 때문에 정적 바인딩이 아닙니다.
+//  - 약속된 draw 메소드에 대한 기본 구현을 제공합니다.
+extension Shape {
+  func draw() {
+    print("Shape draw")
+  }
+}
+
+struct Rect: Shape {
+  func draw() {
+    print("Rect draw")
+  }
+}
+
+struct Circle: Shape {
+  func draw() {
+    print("Circle draw")
+  }
+}
+
+let shapes: [Shape] = [
+  Rect(),
+  Circle()
+]
+
+for shape in shapes {
+  shape.draw()
+}
+
+// ----------
 protocol Plant {
-  func grow()
+  // func grow()
 }
 
 extension Plant {
@@ -21,7 +54,7 @@ extension Tree {
   }
 }
 
-class Oak: Tree {
+struct Oak: Tree {
   // Shadowing
   func grow() {
     print("Oak - grow()")
@@ -31,39 +64,10 @@ class Oak: Tree {
 struct CherryTree: Tree {}
 struct KiwiPlant: Plant {}
 
-//        Plant - KiwiPlant
-//          |
-//         Tree - Oak / CherryTree
+// func grow<P: Plant>(_ plant: P) {
+//  plant.grow()
+// }
 
-func grow<P: Plant>(_ plant: P) {
-  plant.grow()
-}
-
-// let oak: Tree = Oak()
-// grow(oak)
-
-
-
-// grow(Oak())          // Oak().grow()        : Oak grow
-// grow(CherryTree())   // CherryTree.graw()   : Tree grow
-// grow(KiwiPlant())    //                     : Plant grow
-
-// 정적 바인딩 - 컴파일러가 타입을 통해 어떤 메소드를 호출할지 결정한다.
-protocol Shape {}
-extension Shape {
-  func draw() {
-    print("Shape draw")
-  }
-}
-
-struct Rect: Shape {
-  func draw() {
-    print("Rect draw")
-  }
-}
-
-let rect = Rect()
-rect.draw() // Rect draw
-
-let rect2: Shape = rect
-rect2.draw() // Shape draw
+Oak().grow()
+CherryTree().grow()
+KiwiPlant().grow()
