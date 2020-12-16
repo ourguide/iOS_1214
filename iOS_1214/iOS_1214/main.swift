@@ -1,72 +1,4 @@
-
 import Foundation
-
-// 비동기 오류 처리
-// - Result
-//  : 스위프트 5의 비동기 오류 처리에 대한 공식적인 솔루션 입니다.
-
-// 1) 비동기 호출에서 오류가 발생하였을 경우, 오류에 대한 정보를 콜백을 통해 전달해야 합니다.
-//  - 별도의 스레드(스택)에서 발생하는 오류는 전달되지 않습니다.
-//  - 오류의 인자를 콜백의 마지막 인자로 전달합니다.
-
-let url = "https://api.github.com/users/apple"
-
-#if false
-func getJSON(with url: URL) {
-  let task = URLSession.shared.dataTask(with: url) { (data: Data?, _: URLResponse?, error: Error?) in
-    if let error = error {
-      print("실패 - \(error)")
-      return
-    } else if let data = data {
-      if let value = String(data: data, encoding: .utf8) {
-        print(value)
-      }
-    }
-  }
-
-  task.resume()
-}
-
-if let url = URL(string: url) {
-  getJSON(with: url)
-}
-#endif
-
-// - 클로저가 끝난 이후에 수행되는 클로저에 대해서는 @escaping 을 지정해야 합니다.
-// - 클로저가 Optional 인 경우 기본이 @escaping 입니다.
-// func getJSON(with url: URL, completion: ((Data?, Error?) -> Void)?) {
-
-#if false
-func getJSON(with url: URL, completion: @escaping (Data?, Error?) -> Void) {
-  let task = URLSession.shared.dataTask(with: url) { (data: Data?, _: URLResponse?, error: Error?) in
-    completion(data, error)
-  }
-
-  task.resume()
-}
-
-if let url = URL(string: url) {
-  getJSON(with: url) { data, error in
-    if let error = error {
-      print(error)
-    } else if let data = data {
-      print(data)
-    } else {
-      print("????") // 이 상태는 발생하지 않습니다.
-      // 해결 방법: 코드로는 상호 베타적인 관계를 표현하기 어렵습니다.
-      //          enum 기반의 Result를 이용해서 표현할 수 있습니다.
-    }
-  }
-}
-#endif
-
-// Result는 Optional과 유사합니다.
-#if false
-enum Result<Success, Failure: Error> {
-  case success(Success)
-  case failure(Failure)
-}
-#endif
 
 enum NetworkError: Error {
   case fetchFailed(Error)
@@ -75,143 +7,83 @@ enum NetworkError: Error {
 func getJSON(with url: URL, completion: @escaping (Result<Data, NetworkError>) -> Void) {
   let task = URLSession.shared.dataTask(with: url) { (data: Data?, _: URLResponse?, error: Error?) in
 
-    if let dataTaskError = error.map({ NetworkError.fetchFailed($0) }) {
-      completion(.failure(dataTaskError))
-    } else if let data = data {
-      completion(.success(data))
-    } else {
-      fatalError("Invalid state")
-    }
+//    if let dataTaskError = error.map({ NetworkError.fetchFailed($0) }) {
+//      completion(.failure(dataTaskError))
+//    } else if let data = data {
+//      completion(.success(data))
+//    } else {
+//      fatalError("Invalid state")
+//    }
+
+    //        map
+    // Error?  ->   NetworkError?
+    let dataTaskError: NetworkError? = error.map { NetworkError.fetchFailed($0) }
+    let result = Result(value: data, error: dataTaskError)
+
+    completion(result)
   }
 
   task.resume()
 }
 
-// if let url = URL(string: url) {
-//  getJSON(with: url) { result in
-//
-//    switch result {
-//    case let .success(data):
-//      print(data)
-//    case let .failure(error):
-//      print(error)
-//    }
-//
-//  }
-// }
-
-let searchUrl = "https://api.github.com/search/users?q="
-
-typealias JSON = [String: Any]
-
-enum SearchResultError: Error {
-  case invalidQuery(String)
-  case invalidJSON
-  case networkError(NetworkError)
-}
-
-#if false
-func searchUsers(q: String, completion: @escaping (Result<JSON, SearchResultError>) -> Void) {
-  let encodedQuery = q.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
-
-  let path: String? = encodedQuery.map {
-    searchUrl + $0
-  }
-
-  // 여기서 flatMap을 사용해야 하는 이유를 정확하게 이해해야 합니다.
-  // let url = path.flatMap { URL(string: $0) }
-  guard let url = path.flatMap(URL.init) else {
-    completion(.failure(.invalidQuery(q)))
-    return
-  }
-
-  getJSON(with: url) { result in
-
-    switch result {
-    case let .success(data):
-      if let json = try? JSONSerialization.jsonObject(with: data, options: []),
-         let jsonDic = json as? JSON
-      {
-        // JSON 변환 성공
-        completion(.success(jsonDic))
-      } else {
-        // JSON 변환 실패
-        completion(.failure(.invalidJSON))
-      }
-
-    case let .failure(error):
-      completion(.failure(.networkError(error)))
+extension Result {
+  init(value: Success?, error: Failure?) {
+    if let error = error {
+      self = .failure(error)
+    } else if let value = value {
+      self = .success(value)
+    } else {
+      fatalError("Invalid state")
     }
   }
 }
 
-searchUsers(q: "swift") { result in
-  switch result {
-  case let .success(json):
-    print(json)
-  case let .failure(error):
-    print(error)
-  }
+//     decoding(Decodable)            Encodable
+// JSON    ->                    User      ->    JSON
+//  - Swift 4에서는 JSON에 직렬화 / 역직렬화 기능이 추가되었습니다.
+
+// Codable: Decodable & Encodable
+struct User: Decodable {
+  let login: String
+  let id: Int
+  let avatarUrl: String
+  let name: String
+  let location: String
+  let email: String
 }
-#endif
 
-func searchUsers(q: String, completion: @escaping (Result<JSON, SearchResultError>) -> Void) {
-  let encodedQuery = q.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+// https://api.github.com/users/$login
+/*
+ {
+   "login": "apple",
+   "id": 10639145,
+   "avatar_url": "https://avatars0.githubusercontent.com/u/10639145?v=4",
+   "name": "Apple",
+   "location": "Cupertino, CA",
+   "email": null,
+ }
+ */
 
-  let path: String? = encodedQuery.map {
-    searchUrl + $0
-  }
+// User.self
+//  - 자바의 'User.class' 를 전달하는 것과 동일한 개념입니다.
 
-  guard let url = path.flatMap(URL.init) else {
-    completion(.failure(.invalidQuery(q)))
-    return
-  }
-
-  #if false
-  getJSON(with: url) { result in
-    switch result {
-    // 성공 -> Result<S, F>   성공 또는 실패
-    case let .success(data):
-      if let json = try? JSONSerialization.jsonObject(with: data, options: []),
-         let jsonDic = json as? JSON
-      {
-        // JSON 변환 성공
-        completion(.success(jsonDic))
-      } else {
-        // JSON 변환 실패
-        completion(.failure(.invalidJSON))
-      }
-
-    // 실패 -> 다른 종류 실패
-    case let .failure(error):
-      completion(.failure(.networkError(error)))
-    }
-  }
-  #endif
+func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void) {
+  let url = URL(string: "https://api.github.com/users/\(login)")!
 
   getJSON(with: url) { (result: Result<Data, NetworkError>) in
 
-    let convertedResult: Result<JSON, SearchResultError> = result
-      // NetworkError -> SearchResultError
-      // 실패를 다른 종류의 실패로 변경 가능합니다.       :  mapError
-      .mapError { e -> SearchResultError in
-        .networkError(e)
-      }
-      // 성공의 결과를 다른 종류의 성공 데이터로 변환하거나, 오류로 변경할 수 있습니다       :      flatMap
-      .flatMap { (data: Data) -> Result<JSON, SearchResultError> in
-        if let json = try? JSONSerialization.jsonObject(with: data, options: []),
-           let jsonDic = json as? JSON
-        {
-          // JSON 변환 성공
-          return .success(jsonDic)
-        } else {
-          // JSON 변환 실패
-          return .failure(.invalidJSON)
-        }
+    switch result {
+    case let .success(data):
+      let decoder = JSONDecoder()
+      do {
+        let user = try decoder.decode(User.self, from: data)
+        completion(.success(user))
+      } catch {
+        completion(.failure(error))
       }
 
-    completion(convertedResult)
+    case let .failure(error):
+      completion(.failure(error))
+    }
   }
 }
-
-sleep(3)
