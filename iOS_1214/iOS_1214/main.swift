@@ -11,6 +11,7 @@ import Foundation
 
 let url = "https://api.github.com/users/apple"
 
+#if false
 func getJSON(with url: URL) {
   let task = URLSession.shared.dataTask(with: url) { (data: Data?, _: URLResponse?, error: Error?) in
     if let error = error {
@@ -22,11 +23,39 @@ func getJSON(with url: URL) {
       }
     }
   }
+
   task.resume()
 }
 
 if let url = URL(string: url) {
   getJSON(with: url)
+}
+#endif
+
+// - 클로저가 끝난 이후에 수행되는 클로저에 대해서는 @escaping 을 지정해야 합니다.
+// - 클로저가 Optional 인 경우 기본이 @escaping 입니다.
+// func getJSON(with url: URL, completion: ((Data?, Error?) -> Void)?) {
+
+func getJSON(with url: URL, completion: @escaping (Data?, Error?) -> Void) {
+  let task = URLSession.shared.dataTask(with: url) { (data: Data?, _: URLResponse?, error: Error?) in
+    completion(data, error)
+  }
+
+  task.resume()
+}
+
+if let url = URL(string: url) {
+  getJSON(with: url) { data, error in
+    if let error = error {
+      print(error)
+    } else if let data = data {
+      print(data)
+    } else {
+      print("????") // 이 상태는 발생하지 않습니다.
+      // 해결 방법: 코드로는 상호 베타적인 관계를 표현하기 어렵습니다.
+      //          enum 기반의 Result를 이용해서 표현할 수 있습니다.
+    }
+  }
 }
 
 sleep(3)
