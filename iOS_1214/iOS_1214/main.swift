@@ -143,3 +143,41 @@ getUser(login: "apple") { result in
 }
 
 sleep(3)
+
+
+//               map
+// Optional<T>    ->     Optional<U>
+
+// T: String
+// U: Optional<URL>
+
+//                 map
+// Optional<String> -> Optional<Optional<URL>>
+
+//               flatMap
+// Optional<String> -> Optional<URL>
+
+
+// Result<Success, Failure>
+
+//                    map
+//   SuccessT: Data     ->      SuccessU: User
+//   FailureT: Error    ->      FailureT: Error
+
+// Result<Data, Error> ->   Result<User, Error>
+
+//                   mapError
+//   SuccessT: User            ->      SuccessT: User
+//   FailureT: NetworkError    ->      FailureU: Error
+
+//                   map
+//   SuccessT: Data        ->    SuccessU: Result<User, Error>
+ 
+//   Result<Data, Error>   ->    Result<Result<User, Error>, Error>
+
+//                  flatMap
+//   SuccessT: Data        ->    SuccessU: Result<User, Error>
+
+
+//                 flatMapError(실패의 이유중에 성공으로 취급하고 싶다.)
+//  FailureT: Error       ->   FailureU: Result<User, Error>
