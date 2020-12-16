@@ -119,6 +119,7 @@ func removeEmojis(_ string: String) -> String {
 // Emoji: Command + Ctrl + Space
 
 // Optional 안에 있는 값을 변환하는 작업이 번거롭다.
+// var message: String? = "Hello,🧐 world show 🧐me 🧐the money🧐"
 var message: String? = "Hello,🧐 world show 🧐me 🧐the money🧐"
 if let str = message {
   message = removeEmojis(str)
@@ -129,7 +130,26 @@ message = message.map {
   removeEmojis($0)
 }
 
-print(message)
+// print(message)
 
+struct Cover {
+  let title: String?
 
+  init(title: String?) {
+    self.title = title.map {
+      // removeEmojis($0)
+      $0.trimmingCharacters(in: .whitespaces)
+    }
+  }
 
+  #if false
+  init(title: String?) {
+    var temp: String?
+    if let title = title {
+      temp = removeEmojis(title)
+    }
+
+    self.title = temp
+  }
+  #endif
+}
