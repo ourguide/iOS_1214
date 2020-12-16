@@ -54,6 +54,18 @@ try client.send2(email: Email(subject: "Hello",
                               to: [MailAddress(value: "hello@gmail.com")],
                               from: MailAddress(value: "test@gmail.com")))
 
+extension MailValidator where Self: Mailer {
+  func send(email: Email, at: Date) throws {
+    try validate(email: email)
+
+    try send(email: email)
+  }
+}
+
+func submitEmail<T>(sender: T, email: Email) where T: Mailer, T: MailValidator {
+  try! sender.send(email: email, at: Date())
+}
+
 // 상속
 #if false
 protocol ValidatingMailer: Mailer {
