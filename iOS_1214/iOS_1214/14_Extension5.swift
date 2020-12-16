@@ -88,7 +88,7 @@ extension Set {
   }
 }
 
-//---------------------------------------------
+// ---------------------------------------------
 
 struct Article {
   let viewCount: Int
@@ -97,7 +97,7 @@ struct Article {
 let a1 = Article(viewCount: 30)
 let a2 = Article(viewCount: 1000)
 
-let articles = [ a1, a2 ]
+let articles = [a1, a2]
 print(articles.totalViewCount)
 
 extension Collection where Element == Article {
@@ -109,3 +109,7 @@ extension Collection where Element == Article {
     return count
   }
 }
+
+// 1. 프로토콜의 기본 구현을 제공하기 위해서 Extension이 필요합니다.
+// 2. Extensiond를 함부로 사용하는 것은 위험합니다.
+//    제약을 사용하면, 특정 타입에 대해서만 동작하는 Extension을 정의할 수 있습니다.
