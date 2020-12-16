@@ -1,7 +1,7 @@
 
 import Foundation
 
-//                Sequence
+//                 Sequence
 //                    |
 //                Collection - []
 //                    |
@@ -83,9 +83,11 @@ public protocol Collection: Sequence {
   associatedtype Index
   
   var startIndex: Self.Index { get }
-  var endIndex: Self.Index { get }
+  var endIndex: Self.Index { get }     // 끝 다음 인덱스
 
   subscript(position: Self.Index) -> Self.Element { get }
+  
+  func index(after i: Int) -> Self.Index
 }
 #endif
 
@@ -122,7 +124,15 @@ extension Fruits: Collection {
   }
 }
 
+// Collection은 Sequence를 만족합니다.
 let fruits = Fruits()
 for e in fruits {
   print(e)
 }
+
+var result = fruits.map { text -> String in
+  text.uppercased()
+}
+
+result = fruits.sorted()
+print(result)
