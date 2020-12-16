@@ -43,13 +43,16 @@ let arr = [1, 2, 3, 3, 2, 1]
 let result = arr.unique()
 print(result)
 
+// [[version 2]  version 1 ]
+
+// Version 1
 extension Collection where Element: Equatable {
   func unique() -> [Element] {
     print("Equtable 버전을 사용합니다.")
     var uniqueValues = [Element]()
 
     for element in self {
-      if !uniqueValues.contains(element) {  // O(N)
+      if !uniqueValues.contains(element) { // O(N)
         uniqueValues.append(element)
       }
     }
@@ -62,15 +65,15 @@ extension Collection where Element: Equatable {
 extension Collection where Element: Hashable {
   func unique() -> [Element] {
     print("Hashable 버전을 사용합니다.")
-    
+
     var uniqueValues = Set<Element>()
-    
+
     for element in self {
-      if !uniqueValues.contains(element) {  // O(N)
+      if !uniqueValues.contains(element) { // O(N)
         uniqueValues.insert(element)
       }
     }
-    
-    return Array<Element>(uniqueValues)
+
+    return [Element](uniqueValues)
   }
 }
