@@ -2,6 +2,7 @@ import Foundation
 
 enum NetworkError: Error {
   case fetchFailed(Error)
+  case fallback
 }
 
 func getJSON(with url: URL, completion: @escaping (Result<Data, NetworkError>) -> Void) {
@@ -118,24 +119,34 @@ func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void)
 
     // .flatMap(Success 타입의 변환입니다)
     //     data: Data   ->  Result<User, Error>
-//    let newResult = result
-//      .mapError { (error: NetworkError) -> Error in
-//        error
-//      }
-//      .flatMap { (data: Data) -> Result<User, Error> in
-//        Result(catching: {
-//          try decoder.decode(User.self, from: data)
-//        })
-//      }
-    
     let newResult = result
-      .map { data -> User in
-        try! decoder.decode(User.self, from: data)
-      }
-      .mapError { error -> Error in
+      .mapError { (error: NetworkError) -> Error in
         error
       }
-    
+      .flatMap { (data: Data) -> Result<User, Error> in
+        Result(catching: {
+          try decoder.decode(User.self, from: data)
+        })
+      }
+      .flatMapError { (error: Error) -> Result<User, Error> in
+        // 복구 가능한 오류
+        if case NetworkError.fallback = error {
+          let user = User(login: "", id: 0, avatarUrl: "", name: "", location: "", email: nil)
+          return .success(user)
+        }
+
+        return .failure(error)
+      }
+
+    #if false
+    let newResult = result
+      .map { (data: Data) -> User in
+        try! decoder.decode(User.self, from: data)
+      }
+      .mapError { (error: NetworkError) -> Error in
+        error
+      }
+    #endif
 
     completion(newResult)
   }
