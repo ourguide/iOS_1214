@@ -87,4 +87,18 @@ func getJSON(with url: URL, completion: @escaping (Result<Data, NetworkError>) -
   task.resume()
 }
 
+if let url = URL(string: url) {
+  getJSON(with: url) { result in
+    
+    switch result {
+    case let .success(data):
+      print(data)
+    case let .failure(error):
+      print(error)
+    }
+    
+  }
+}
+
+
 sleep(3)
