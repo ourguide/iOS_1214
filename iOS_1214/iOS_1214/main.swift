@@ -87,3 +87,25 @@ extension Set {
     return Array(self)
   }
 }
+
+//---------------------------------------------
+
+struct Article {
+  let viewCount: Int
+}
+
+let a1 = Article(viewCount: 30)
+let a2 = Article(viewCount: 1000)
+
+let articles = [ a1, a2 ]
+print(articles.totalViewCount)
+
+extension Collection where Element == Article {
+  var totalViewCount: Int {
+    var count = 0
+    for e in self {
+      count += e.viewCount
+    }
+    return count
+  }
+}
