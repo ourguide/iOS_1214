@@ -51,7 +51,7 @@ struct User: Decodable {
   let location: String
   let email: String?
 
-#if false
+  #if false
   enum CodingKeys: String, CodingKey {
     case login
     case id
@@ -60,26 +60,27 @@ struct User: Decodable {
     case email
     case avatarUrl = "avatar_url"
   }
-#endif
+  #endif
 }
 
 // Optional이 필요한 타입에 대해서 정확하게 파악이 필요합니다.
 
 // https://api.github.com/users/$login
 /*
-{
-  "login": "apple",
-  "id": 10639145,
-  "avatar_url": "https://avatars0.githubusercontent.com/u/10639145?v=4",
-  "name": "Apple",
-  "location": "Cupertino, CA",
-  "email": null,
-}
-*/
+ {
+   "login": "apple",
+   "id": 10639145,
+   "avatar_url": "https://avatars0.githubusercontent.com/u/10639145?v=4",
+   "name": "Apple",
+   "location": "Cupertino, CA",
+   "email": null,
+ }
+ */
 
 // User.self
 //  - 자바의 'User.class' 를 전달하는 것과 동일한 개념입니다.
 
+#if false
 func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void) {
   let url = URL(string: "https://api.github.com/users/\(login)")!
 
@@ -89,7 +90,7 @@ func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void)
     case let .success(data):
       let decoder = JSONDecoder()
       decoder.keyDecodingStrategy = .convertFromSnakeCase
-      
+
       do {
         let user = try decoder.decode(User.self, from: data)
         completion(.success(user))
@@ -100,6 +101,55 @@ func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void)
     case let .failure(error):
       completion(.failure(error))
     }
+  }
+}
+#endif
+
+func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void) {
+  let url = URL(string: "https://api.github.com/users/\(login)")!
+
+  let decoder = JSONDecoder()
+  decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+  getJSON(with: url) { (result: Result<Data, NetworkError>) in
+
+    let newResult = result
+      .mapError { (error: NetworkError) -> Error in
+        error
+      }
+      .flatMap { (data: Data) -> Result<User, Error> in
+        Result(catching: {
+          try decoder.decode(User.self, from: data)
+        })
+      }
+
+    completion(newResult)
+
+    // .mapError
+    //     NetworkError ->  Error
+
+    // .flatMap(Success 타입의 변환입니다)
+    //     data: Data   ->  Result<User, Error>
+
+    #if false
+    switch result {
+    //            flatMap
+    // data: Data    ->    Result<User, Error>
+    case let .success(data):
+      let decoder = JSONDecoder()
+      decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+      do {
+        let user = try decoder.decode(User.self, from: data)
+        completion(.success(user))
+      } catch {
+        completion(.failure(error))
+      }
+
+    case let .failure(error):
+      completion(.failure(error))
+    }
+    #endif
   }
 }
 
