@@ -46,11 +46,23 @@ extension Result {
 struct User: Decodable {
   let login: String
   let id: Int
-//  let avatarUrl: String
+  let avatarUrl: String
   let name: String
   let location: String
   let email: String?
+
+#if false
+  enum CodingKeys: String, CodingKey {
+    case login
+    case id
+    case name
+    case location
+    case email
+    case avatarUrl = "avatar_url"
+  }
+#endif
 }
+
 // Optional이 필요한 타입에 대해서 정확하게 파악이 필요합니다.
 
 // https://api.github.com/users/$login
@@ -76,6 +88,8 @@ func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void)
     switch result {
     case let .success(data):
       let decoder = JSONDecoder()
+      decoder.keyDecodingStrategy = .convertFromSnakeCase
+      
       do {
         let user = try decoder.decode(User.self, from: data)
         completion(.success(user))
