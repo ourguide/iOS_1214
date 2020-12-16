@@ -95,3 +95,7 @@ for case let url? in urls {
   print(url)
 }
 #endif
+
+// map:        [ T ] ->  [  U  ]
+// flatMap:     [ T ] ->  [ [U] ]  -> [ U ]
+// compactMap: [ T ] ->  [ U?  ]  -> [ U ]
