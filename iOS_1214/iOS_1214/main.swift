@@ -176,3 +176,13 @@ struct Diary {
     }
   }
 }
+
+let activities = [
+  Activity(date: Date(), description: "아침 식사"),
+  Activity(date: Date(), description: "점심 식사"),
+  Activity(date: Date(), description: "저녁 식사"),
+  Activity(date: Date(), description: "야식"),
+]
+
+let diary = Diary(activities: activities)
+dump(diary)
