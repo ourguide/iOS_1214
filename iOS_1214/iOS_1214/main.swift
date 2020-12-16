@@ -87,18 +87,61 @@ func getJSON(with url: URL, completion: @escaping (Result<Data, NetworkError>) -
   task.resume()
 }
 
-if let url = URL(string: url) {
-  getJSON(with: url) { result in
-    
-    switch result {
-    case let .success(data):
-      print(data)
-    case let .failure(error):
-      print(error)
-    }
-    
-  }
+// if let url = URL(string: url) {
+//  getJSON(with: url) { result in
+//
+//    switch result {
+//    case let .success(data):
+//      print(data)
+//    case let .failure(error):
+//      print(error)
+//    }
+//
+//  }
+// }
+
+let searchUrl = "https://api.github.com/search/users?q="
+
+typealias JSON = [String: Any]
+
+enum SearchResultError: Error {
+  case invalidQuery(String)
+  case invalidJSON
+  case networkError(NetworkError)
 }
 
+func searchUsers(q: String, completion: @escaping (Result<JSON, SearchResultError>) -> Void) {
+  let encodedQuery = q.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+
+  let path: String? = encodedQuery.map {
+    searchUrl + $0
+  }
+
+  // 여기서 flatMap을 사용해야 하는 이유를 정확하게 이해해야 합니다.
+  // let url = path.flatMap { URL(string: $0) }
+  guard let url = path.flatMap(URL.init) else {
+    completion(.failure(.invalidQuery(q)))
+    return
+  }
+
+  getJSON(with: url) { result in
+
+    switch result {
+    case let .success(data):
+      if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+         let jsonDic = json as? JSON
+      {
+        // JSON 변환 성공
+        completion(.success(jsonDic))
+      } else {
+        // JSON 변환 실패
+        completion(.failure(.invalidJSON))
+      }
+
+    case let .failure(error):
+      completion(.failure(.networkError(error)))
+    }
+  }
+}
 
 sleep(3)
