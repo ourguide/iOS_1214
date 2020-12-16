@@ -113,6 +113,11 @@ func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void)
 
   getJSON(with: url) { (result: Result<Data, NetworkError>) in
 
+    // .mapError
+    //     NetworkError ->  Error
+
+    // .flatMap(Success 타입의 변환입니다)
+    //     data: Data   ->  Result<User, Error>
     let newResult = result
       .mapError { (error: NetworkError) -> Error in
         error
@@ -124,32 +129,6 @@ func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void)
       }
 
     completion(newResult)
-
-    // .mapError
-    //     NetworkError ->  Error
-
-    // .flatMap(Success 타입의 변환입니다)
-    //     data: Data   ->  Result<User, Error>
-
-    #if false
-    switch result {
-    //            flatMap
-    // data: Data    ->    Result<User, Error>
-    case let .success(data):
-      let decoder = JSONDecoder()
-      decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-      do {
-        let user = try decoder.decode(User.self, from: data)
-        completion(.success(user))
-      } catch {
-        completion(.failure(error))
-      }
-
-    case let .failure(error):
-      completion(.failure(error))
-    }
-    #endif
   }
 }
 
