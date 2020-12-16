@@ -7,14 +7,14 @@ import Foundation
 
 typealias User = (name: String, count: Int)
 
-
+#if false
 func resolveCounts(statistics: [User]) -> [String] {
   var result = [String]()
 
   for (name, count) in statistics {
     // var message: String = ""
     let message: String
-    
+
     switch count {
     case 0:
       message = "\(name): 아무것도 안함"
@@ -29,6 +29,22 @@ func resolveCounts(statistics: [User]) -> [String] {
 
   return result
 }
+#endif
+
+// [ T ]  ->  [ U ]
+
+func resolveCounts(statistics: [User]) -> [String] {
+  return statistics.map { name, count in
+    switch count {
+    case 0:
+      return "\(name): 아무것도 안함"
+    case 1 ..< 100:
+      return "\(name): 열심히 안함"
+    default:
+      return "\(name): 열심히 했음"
+    }
+  }
+}
 
 let commitsPerUser: [User] = [
   (name: "Tom", count: 30),
@@ -38,5 +54,3 @@ let commitsPerUser: [User] = [
 
 let result = resolveCounts(statistics: commitsPerUser)
 print(result)
-
-
