@@ -1,25 +1,114 @@
 
-// https://medium.com/ios-os-x-development/swift-protocol-extension-method-dispatch-6a6bf270ba94
-
 import Foundation
 
 #if false
-protocol Base {
-  func foo()
+struct MailAddress {
+  let value: String
 }
 
-struct Derived: Base {
-  func foo() {
-    print("Derived foo")
+struct Email {
+  let subject: String
+  let body: String
+  let to: [MailAddress]
+  let from: MailAddress
+}
+
+protocol Mailer {
+  func send(email: Email) throws
+}
+
+extension Mailer {
+  func send(email: Email) {
+    print("Mailer: mail sent - \(email)")
   }
 }
 
-let d: Base = Derived()  // Derived foo
-d.foo()
+protocol MailValidator {
+  func validate(email: Email) throws
+}
+
+extension MailValidator {
+  func validate(email: Email) throws {
+    print("MailValidator - \(email) is valid!!")
+  }
+}
+
+// ---------- 프로토콜 합성을 사용하는 방법
+
+// MailValidator를 만족하는 타입이 Mailer의 프로토콜도 만족하고 있다면...
+extension MailValidator where Self: Mailer {
+  func send(email: Email) throws {
+    // print("MailValidator - \(email)")
+
+    try validate(email: email)
+
+    try send(email: email) // 동적 바인딩
+  }
+}
+
+struct SMTPClient: Mailer, MailValidator {}
+
+let client = SMTPClient()
+try client.send(email: Email(subject: "Hello",
+                             body: "Hello world",
+                             to: [MailAddress(value: "hello@gmail.com")],
+                             from: MailAddress(value: "test@gmail.com")))
+
 #endif
 
 #if false
-// 프로토콜이 기본 구현을 제공하는 경우 - 동적 디스패치
+// class version
+class Base {
+  func foo() {
+    print("Base foo")
+  }
+}
+
+class Derived: Base {
+  override func foo() {
+    super.foo() // 부모가 제공하는 기본 구현을 사용한다.
+    print("Derived foo")
+  }
+}
+
+let b: Base = Derived()
+b.foo()
+
+#endif
+
+// protocol version - 정적 바인딩
+//  - (self as Base).foo()
+
+#if false
+protocol Base {
+  // foo를 제공하지 않습니다.
+}
+
+extension Base {
+  func foo() {
+    print("Base foo")
+  }
+}
+
+class Derived: Base {
+  func foo() {
+    (self as Base).foo()
+
+    print("Derived foo")
+  }
+}
+
+let b = Derived()
+b.foo()
+#endif
+
+// https://forums.swift.org/t/calling-default-implementation-of-protocols/328
+// 해결 방법
+// 1) 다른 이름을 사용해라.
+//    - 프로토콜의 기본 구현을 덮어쓰면, 다시 호출할 수 있는 방법을 현재의 스위프트는 제공하지 않습니다.
+//    - 기본 구현과 다른 이름의 메소드를 정의해야 합니다.
+// 2)
+
 protocol Base {
   func foo()
 }
@@ -30,37 +119,21 @@ extension Base {
   }
 }
 
-struct Derived: Base {
+class Derived: Base {
   func foo() {
     print("Derived foo")
+    
+    struct DefaultBase : Base {}
+    DefaultBase().foo()
+    
   }
+  
+//  func callFoo() {
+//    print("Derived foo")
+//    foo()
+//  }
 }
 
-let d: Base = Derived() // Derived foo - Derived가 foo를 제공하는 경우
-                        // Base foo    - Derived가 foo를 제공하지 않은 경우, 프로토콜의 기본 구현을 사용할 수 있다.
-d.foo()
-#endif
-
-protocol Base {
-  // 선언이 제공되지 않는다. - 무조건 Base foo를 호출한다.(정적 디스패치)
-  // foo에 대한 메소드 요구사항이 존재하지 않는다.
-}
-
-extension Base {
-  func foo() {
-    print("Base foo")
-  }
-}
-
-struct Derived: Base {
-  func foo() {
-    print("Derived foo")
-  }
-}
-
-let d: Base = Derived()
-d.foo()
-
-let d2: Derived = Derived()
-d2.foo()
-
+let b = Derived()
+b.foo()
+// b.callFoo()
