@@ -91,11 +91,11 @@ let commitsPerUser: [User] = [
 // print(result)
 
 let result = counts(statistics: commitsPerUser)
-print(result)
+// print(result)
 
 let dic = Dictionary(commitsPerUser) { name, _ in
   name // Key
-}.map { (name, count) -> String in  // [String, Int] -> [String]
+}.map { (name, count) -> String in // [String, Int] -> [String]
   switch count {
   case 0:
     return "\(name): 아무것도 안함"
@@ -106,4 +106,17 @@ let dic = Dictionary(commitsPerUser) { name, _ in
   }
 }
 
-print(dic)
+// print(dic)
+
+func removeEmojis(_ string: String) -> String {
+  var scalars = string.unicodeScalars
+  scalars.removeAll {
+    $0.properties.isEmoji
+  }
+
+  return String(scalars)
+}
+
+// Emoji: Command + Ctrl + Space
+let message = "Hello,🧐 world show 🧐me 🧐the money🧐"
+print(removeEmojis(message))
