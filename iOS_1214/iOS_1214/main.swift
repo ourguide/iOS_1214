@@ -46,11 +46,12 @@ extension Result {
 struct User: Decodable {
   let login: String
   let id: Int
-  let avatarUrl: String
+//  let avatarUrl: String
   let name: String
   let location: String
-  let email: String
+  let email: String?
 }
+// Optional이 필요한 타입에 대해서 정확하게 파악이 필요합니다.
 
 // https://api.github.com/users/$login
 /*
