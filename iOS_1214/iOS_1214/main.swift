@@ -95,7 +95,7 @@ print(result)
 
 let dic = Dictionary(commitsPerUser) { name, _ in
   name // Key
-}.map { (name, count) -> String in // key가 아닌 value에 변환이 가능합니다.
+}.map { (name, count) -> String in  // [String, Int] -> [String]
   switch count {
   case 0:
     return "\(name): 아무것도 안함"
