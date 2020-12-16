@@ -67,15 +67,18 @@ func counts(statistics: [User]) -> [Int] {
 }
 #endif
 
+// 선언적인 코드 - 가독성이 좋다.
+//    문제점: 불필요한 루프로 인한 성능 차리가 문제가 된다면,
+//           직접 알고리즘을 작성하는 것이 좋을 수 있습니다.
 func counts(statistics: [User]) -> [Int] {
   return statistics
-    .map { _, count in // [User] -> [Int]
+    .map { _, count in // [User] -> [Int]     - N
       count
     }
-    .filter { e in
+    .filter { e in //                     - N
       e > 0
     }
-    .sorted(by: >)
+    .sorted(by: >) //                     - Nlog(N)
 }
 
 let commitsPerUser: [User] = [
@@ -89,3 +92,18 @@ let commitsPerUser: [User] = [
 
 let result = counts(statistics: commitsPerUser)
 print(result)
+
+let dic = Dictionary(commitsPerUser) { name, _ in
+  name // Key
+}.map { (name, count) -> String in // key가 아닌 value에 변환이 가능합니다.
+  switch count {
+  case 0:
+    return "\(name): 아무것도 안함"
+  case 1 ..< 100:
+    return "\(name): 열심히 안함"
+  default:
+    return "\(name): 열심히 했음"
+  }
+}
+
+print(dic)
