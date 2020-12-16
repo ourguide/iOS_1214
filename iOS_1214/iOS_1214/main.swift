@@ -37,3 +37,22 @@ class MyViewController: UIViewController, AnalyticsProtocol {
   }
 }
 
+// -------------------------------------
+
+let arr = [1, 2, 3, 3, 2, 1]
+let result = arr.unique()
+print(result)
+
+extension Collection where Element: Equatable {
+  func unique() -> [Element] {
+    var uniqueValues = [Element]()
+
+    for element in self {
+      if !uniqueValues.contains(element) {
+        uniqueValues.append(element)
+      }
+    }
+
+    return uniqueValues
+  }
+}
