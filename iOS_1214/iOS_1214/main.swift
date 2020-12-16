@@ -87,3 +87,15 @@ func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void)
     }
   }
 }
+
+getUser(login: "apple") { result in
+  switch result {
+  case let .success(user):
+    print(user)
+
+  case let .failure(error):
+    print(error)
+  }
+}
+
+sleep(3)
