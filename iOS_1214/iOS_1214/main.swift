@@ -1,35 +1,65 @@
 
-
 import Foundation
 
-#if false
-// 실패가 불가능한 연산
-enum MyError: Error {
-  // case를 제공하지 않습니다.
+// Extension
+//   -       상속: 수직 확장
+//        : 런타임 다형성을 제공하고, '자식 클래스에 기본 구현을 제공'할 수 있습니다.
+//          부모 클래스와 강력한 결합을 형성하기 때문에, 유지보수에 어려움이 생길 수 있다.
+//
+//   - Extension: 수평 확장
+
+protocol RequestBuilder {
+  var baseURL: URL { get }
+
+  func makeRequest(path: String) -> URLRequest
 }
 
-func load(url: String, completion: (Result<String, MyError>) -> Void) {}
+#if false
+struct GithubRequestBuilder: RequestBuilder {
+  let baseURL = URL(string: "https://api.github.com")!
 
-load(url: "https://google.com") { result in
-  switch result {
-  case let .success(data):
-    print(data)
+  func makeRequest(path: String) -> URLRequest {
+    let url = baseURL.appendingPathComponent(path)
+    var request = URLRequest(url: url)
+    request.httpShouldHandleCookies = false
+    request.timeoutInterval = 30
+    return request
+  }
+}
+
+struct NaverRequestBuilder: RequestBuilder {
+  let baseURL = URL(string: "https://api.naver.com")!
+
+  func makeRequest(path: String) -> URLRequest {
+    let url = baseURL.appendingPathComponent(path)
+    var request = URLRequest(url: url)
+    request.httpShouldHandleCookies = false
+    request.timeoutInterval = 30
+    return request
   }
 }
 #endif
 
-// Never: 인스턴스화가 불가능한 타입
-//  - 실패 불가능한 Result를 표현할 때 사용됩니다.
-func load(url: String, completion: (Result<String, Never>) -> Void) {}
-
-load(url: "https://google.com") { result in
-  switch result {
-  case let .success(data):
-    print(data)
+// 1. 프로토콜의 기본 구현을 제공하기 위해서는 반드시 extension을 이용해야 합니다.
+extension RequestBuilder {
+  func makeRequest(path: String) -> URLRequest {
+    let url = baseURL.appendingPathComponent(path)
+    var request = URLRequest(url: url)
+    request.httpShouldHandleCookies = false
+    request.timeoutInterval = 30
+    return request
   }
 }
 
-//  - 함수의 반환이 불가능한 경우 사용됩니다.
-func foo() -> Never {
-  fatalError("xxx")
+struct GithubRequestBuilder: RequestBuilder {
+  let baseURL = URL(string: "https://api.github.com")!
 }
+
+struct NaverRequestBuilder: RequestBuilder {
+  let baseURL = URL(string: "https://api.naver.com")!
+}
+
+let requestBuidler = GithubRequestBuilder()
+let request = requestBuidler.makeRequest(path: "/users")
+
+print(request)
