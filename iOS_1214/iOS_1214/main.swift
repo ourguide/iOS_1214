@@ -144,4 +144,13 @@ func searchUsers(q: String, completion: @escaping (Result<JSON, SearchResultErro
   }
 }
 
+searchUsers(q: "swift") { result in
+  switch result {
+  case let .success(json):
+    print(json)
+  case let .failure(error):
+    print(error)
+  }
+}
+
 sleep(3)
