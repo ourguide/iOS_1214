@@ -67,15 +67,15 @@ struct User: Decodable {
 
 // https://api.github.com/users/$login
 /*
- {
-   "login": "apple",
-   "id": 10639145,
-   "avatar_url": "https://avatars0.githubusercontent.com/u/10639145?v=4",
-   "name": "Apple",
-   "location": "Cupertino, CA",
-   "email": null,
- }
- */
+{
+  "login": "apple",
+  "id": 10639145,
+  "avatar_url": "https://avatars0.githubusercontent.com/u/10639145?v=4",
+  "name": "Apple",
+  "location": "Cupertino, CA",
+  "email": null,
+}
+*/
 
 // User.self
 //  - 자바의 'User.class' 를 전달하는 것과 동일한 개념입니다.
