@@ -166,7 +166,6 @@ struct Diary {
   typealias DataType = [Day: [Activity]]
 
   var activities = DataType()
-
   //            groupBy
   // [Activity]    ->     [ Day: [Activity] ]
   init(activities: [Activity]) {
@@ -184,5 +183,40 @@ let activities = [
   Activity(date: Date(), description: "야식"),
 ]
 
+// let diary = Diary(activities: activities)
+// dump(diary)
+
+extension Diary: Collection {
+  var startIndex: DataType.Index {
+    return activities.keys.startIndex
+  }
+
+  var endIndex: DataType.Index {
+    return activities.keys.endIndex
+  }
+
+  func index(after i: DataType.Index) -> DataType.Index {
+    return activities.index(after: i)
+  }
+
+  subscript(position: DataType.Index) -> DataType.Element {
+    return activities[position]
+  }
+}
+
 let diary = Diary(activities: activities)
-dump(diary)
+
+var startIndex = diary.startIndex
+while startIndex < diary.endIndex {
+  let e = diary[startIndex]
+  dump("index: \(startIndex)")
+  dump("value: \(e)")
+
+  startIndex = diary.index(after: startIndex)
+}
+
+for (day, activities) in diary {
+  dump(day)
+  dump(activities)
+}
+
