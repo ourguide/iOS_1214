@@ -110,6 +110,7 @@ enum SearchResultError: Error {
   case networkError(NetworkError)
 }
 
+#if false
 func searchUsers(q: String, completion: @escaping (Result<JSON, SearchResultError>) -> Void) {
   let encodedQuery = q.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
 
@@ -150,6 +151,66 @@ searchUsers(q: "swift") { result in
     print(json)
   case let .failure(error):
     print(error)
+  }
+}
+#endif
+
+func searchUsers(q: String, completion: @escaping (Result<JSON, SearchResultError>) -> Void) {
+  let encodedQuery = q.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+
+  let path: String? = encodedQuery.map {
+    searchUrl + $0
+  }
+
+  guard let url = path.flatMap(URL.init) else {
+    completion(.failure(.invalidQuery(q)))
+    return
+  }
+
+  #if false
+  getJSON(with: url) { result in
+    switch result {
+    // 성공 -> Result<S, F>   성공 또는 실패
+    case let .success(data):
+      if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+         let jsonDic = json as? JSON
+      {
+        // JSON 변환 성공
+        completion(.success(jsonDic))
+      } else {
+        // JSON 변환 실패
+        completion(.failure(.invalidJSON))
+      }
+
+    // 실패 -> 다른 종류 실패
+    case let .failure(error):
+      completion(.failure(.networkError(error)))
+    }
+  }
+  #endif
+
+  getJSON(with: url) { (result: Result<Data, NetworkError>) in
+
+    let convertedResult: Result<JSON, SearchResultError> = result
+      // NetworkError -> SearchResultError
+      // 실패를 다른 종류의 실패로 변경 가능합니다.       :  mapError
+      .mapError { e -> SearchResultError in
+        .networkError(e)
+      }
+      // 성공의 결과를 다른 종류의 성공 데이터로 변환하거나, 오류로 변경할 수 있습니다       :      flatMap
+      .flatMap { (data: Data) -> Result<JSON, SearchResultError> in
+        if let json = try? JSONSerialization.jsonObject(with: data, options: []),
+           let jsonDic = json as? JSON
+        {
+          // JSON 변환 성공
+          return .success(jsonDic)
+        } else {
+          // JSON 변환 실패
+          return .failure(.invalidJSON)
+        }
+      }
+
+    completion(convertedResult)
   }
 }
 
