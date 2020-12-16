@@ -22,6 +22,7 @@ extension Tree {
 }
 
 struct Oak: Tree {
+  // Shadowing
   func grow() {
     print("Oak - grow()")
   }
@@ -38,6 +39,8 @@ func grow<P: Plant>(_ plant: P) {
   plant.grow()
 }
 
-grow(Oak())
-grow(CherryTree())
-grow(KiwiPlant())
+grow(Oak())          // Oak().grow()        : Oak grow
+grow(CherryTree())   // CherryTree.graw()   : Tree grow
+grow(KiwiPlant())    //                     : Plant grow
+
+// 정적 바인딩 - 컴파일러가 타입을 통해 어떤 메소드를 호출할지 결정한다.
