@@ -118,15 +118,24 @@ func getUser(login: String, completion: @escaping (Result<User, Error>) -> Void)
 
     // .flatMap(Success 타입의 변환입니다)
     //     data: Data   ->  Result<User, Error>
+//    let newResult = result
+//      .mapError { (error: NetworkError) -> Error in
+//        error
+//      }
+//      .flatMap { (data: Data) -> Result<User, Error> in
+//        Result(catching: {
+//          try decoder.decode(User.self, from: data)
+//        })
+//      }
+    
     let newResult = result
-      .mapError { (error: NetworkError) -> Error in
+      .map { data -> User in
+        try! decoder.decode(User.self, from: data)
+      }
+      .mapError { error -> Error in
         error
       }
-      .flatMap { (data: Data) -> Result<User, Error> in
-        Result(catching: {
-          try decoder.decode(User.self, from: data)
-        })
-      }
+    
 
     completion(newResult)
   }
@@ -144,7 +153,6 @@ getUser(login: "apple") { result in
 
 sleep(3)
 
-
 //               map
 // Optional<T>    ->     Optional<U>
 
@@ -152,19 +160,18 @@ sleep(3)
 // U: Optional<URL>
 
 //                 map
-// Optional<String> -> Optional<Optional<URL>>
+//   Optional<String> -> Optional<Optional<URL>>
 
-//               flatMap
-// Optional<String> -> Optional<URL>
+//                flatMap
+//   Optional<String> -> Optional<URL>
 
-
-// Result<Success, Failure>
+//   Result<Success, Failure>
 
 //                    map
 //   SuccessT: Data     ->      SuccessU: User
 //   FailureT: Error    ->      FailureT: Error
 
-// Result<Data, Error> ->   Result<User, Error>
+//   Result<Data, Error> ->   Result<User, Error>
 
 //                   mapError
 //   SuccessT: User            ->      SuccessT: User
@@ -172,12 +179,11 @@ sleep(3)
 
 //                   map
 //   SuccessT: Data        ->    SuccessU: Result<User, Error>
- 
+
 //   Result<Data, Error>   ->    Result<Result<User, Error>, Error>
 
 //                  flatMap
 //   SuccessT: Data        ->    SuccessU: Result<User, Error>
-
 
 //                 flatMapError(실패의 이유중에 성공으로 취급하고 싶다.)
 //  FailureT: Error       ->   FailureU: Result<User, Error>
