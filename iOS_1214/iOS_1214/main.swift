@@ -46,6 +46,7 @@ func resolveCounts(statistics: [User]) -> [String] {
 }
 
 // count가 0이 아닌 데이터를 정렬해서 반환한다.
+#if false
 func counts(statistics: [User]) -> [Int] {
   var counts = [Int]()
 
@@ -63,6 +64,18 @@ func counts(statistics: [User]) -> [Int] {
   }
 
   return counts.sorted(by: >)
+}
+#endif
+
+func counts(statistics: [User]) -> [Int] {
+  return statistics
+    .map { _, count in // [User] -> [Int]
+      count
+    }
+    .filter { e in
+      e > 0
+    }
+    .sorted(by: >)
 }
 
 let commitsPerUser: [User] = [
