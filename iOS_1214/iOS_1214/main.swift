@@ -36,6 +36,7 @@ if let url = URL(string: url) {
 // - 클로저가 Optional 인 경우 기본이 @escaping 입니다.
 // func getJSON(with url: URL, completion: ((Data?, Error?) -> Void)?) {
 
+#if false
 func getJSON(with url: URL, completion: @escaping (Data?, Error?) -> Void) {
   let task = URLSession.shared.dataTask(with: url) { (data: Data?, _: URLResponse?, error: Error?) in
     completion(data, error)
@@ -56,6 +57,34 @@ if let url = URL(string: url) {
       //          enum 기반의 Result를 이용해서 표현할 수 있습니다.
     }
   }
+}
+#endif
+
+// Result는 Optional과 유사합니다.
+#if false
+enum Result<Success, Failure: Error> {
+  case success(Success)
+  case failure(Failure)
+}
+#endif
+
+enum NetworkError: Error {
+  case fetchFailed(Error)
+}
+
+func getJSON(with url: URL, completion: @escaping (Result<Data, NetworkError>) -> Void) {
+  let task = URLSession.shared.dataTask(with: url) { (data: Data?, _: URLResponse?, error: Error?) in
+
+    if let dataTaskError = error.map({ NetworkError.fetchFailed($0) }) {
+      completion(.failure(dataTaskError))
+    } else if let data = data {
+      completion(.success(data))
+    } else {
+      fatalError("Invalid state")
+    }
+  }
+
+  task.resume()
 }
 
 sleep(3)
