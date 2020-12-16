@@ -16,7 +16,7 @@ import Foundation
 //  : 길이를 변경하지 않고 요소의 값을 변경할 수 있는 연산을 제공한다.
 //  - Array
 //     : sort / partition
-
+#if false
 var arr = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
 arr.sort()
 
@@ -76,21 +76,23 @@ print(repeated[3])
 // --------------
 
 // Collection 프로토콜을 만족하면, Sequence 프로토콜도 만족한다.
+#endif
 
 #if false
 public protocol Collection: Sequence {
   associatedtype Element
   associatedtype Index
-  
+
   var startIndex: Self.Index { get }
-  var endIndex: Self.Index { get }     // 끝 다음 인덱스
+  var endIndex: Self.Index { get } // 끝 다음 인덱스
 
   subscript(position: Self.Index) -> Self.Element { get }
-  
+
   func index(after i: Int) -> Self.Index
 }
 #endif
 
+#if false
 struct Fruits {
   let banana = "Banana"
   let apple = "Apple"
@@ -136,3 +138,41 @@ var result = fruits.map { text -> String in
 
 result = fruits.sorted()
 print(result)
+#endif
+
+struct Activity {
+  let date: Date
+  let description: String
+}
+
+struct Day: Hashable {
+  let date: Date
+
+  // 시간 / 분 / 초에 대한 정보는 제외한다.
+  init(date: Date) {
+    let flags: Set<Calendar.Component> = [.year, .month, .day]
+    let components = Calendar.current.dateComponents(flags, from: date)
+
+    guard let convertedDate = Calendar.current.date(from: components) else {
+      self.date = date
+      return
+    }
+
+    self.date = convertedDate
+  }
+}
+
+struct Diary {
+  typealias DataType = [Day: [Activity]]
+
+  var activities = DataType()
+
+  //            groupBy
+  // [Activity]    ->     [ Day: [Activity] ]
+  init(activities: [Activity]) {
+    //                                                             <key>
+    self.activities = Dictionary(grouping: activities) { activity -> Day in
+      Day(date: activity.date)
+    }
+  }
+}
