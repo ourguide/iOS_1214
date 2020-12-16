@@ -43,6 +43,9 @@ let arr = [1, 2, 3, 3, 2, 1]
 let result = arr.unique()
 print(result)
 
+let arr2: Set<Int> = [1, 2, 3, 4, 5, 5, 4, 3, 2, 1]
+print(arr2.unique())
+
 // [[version 2]  version 1 ]
 
 // Version 1
@@ -74,6 +77,13 @@ extension Collection where Element: Hashable {
       }
     }
 
-    return [Element](uniqueValues)
+    return Array(uniqueValues)
+  }
+}
+
+extension Set {
+  func unique() -> [Element] {
+    print("Set 버전을 사용합니다.")
+    return Array(self)
   }
 }
