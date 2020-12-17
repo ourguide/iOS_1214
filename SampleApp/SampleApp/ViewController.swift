@@ -19,6 +19,12 @@ class ViewController: UIViewController {
   //   : Task
   //     => URLSession
   
+  var loadTask: URLSessionTask?
+  
+  @IBAction func onCancel(_ sender: Any) {
+    loadTask?.cancel()
+  }
+  
   func loadImageFromURL(_ url: URL, completion: @escaping (UIImage?, Error?) -> Void) {
     let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
       if let error = error {
@@ -39,6 +45,7 @@ class ViewController: UIViewController {
       completion(image, nil)
     }
     
+    loadTask = task
     task.resume()
   }
   
