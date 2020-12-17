@@ -55,6 +55,7 @@ class ViewController: UIViewController {
   //    더 이상 이벤트를 받고 싶지 않을 때, 이 객체를 통해 구독을 취소할 수 있습니다.
   
   // func loadImageFromURL(_ url: URL, completion: @escaping (UIImage?, Error?) -> Void)
+  #if false
   func loadImageFromURL(_ url: URL) -> Observable<Int> {
     return Observable.create { observer -> Disposable in
       observer.onNext(10)
@@ -70,8 +71,6 @@ class ViewController: UIViewController {
     }
   }
   
-  @IBAction func onCancel(_ sender: Any) {}
-  
   @IBAction func onLoad(_ sender: UIButton) {
     let observable = loadImageFromURL(IMAGE_URL)
     
@@ -83,6 +82,56 @@ class ViewController: UIViewController {
         print("onError: \(error)")
       case .completed:
         print("onComplete")
+      }
+    }
+  }
+  #endif
+  
+  func loadImageFromURL(_ url: URL) -> Observable<UIImage> {
+    return Observable.create { observer -> Disposable in
+      
+      let task = URLSession.shared.dataTask(with: url) { data, _, error in
+        if let error = error {
+          observer.onError(error)
+          return
+        }
+        
+        guard let data = data else {
+          observer.onError(NSError(domain: "Invalid Data(null)", code: 0, userInfo: [:]))
+          return
+        }
+        
+        guard let image = UIImage(data: data) else {
+          observer.onError(NSError(domain: "Invalid Data", code: 0, userInfo: [:]))
+          return
+        }
+        
+        observer.onNext(image)
+      }
+      
+      task.resume()
+      return Disposables.create()
+    }
+  }
+  
+  @IBAction func onCancel(_ sender: Any) {}
+  
+  @IBAction func onLoad(_ sender: UIButton) {
+    let observable = loadImageFromURL(IMAGE_URL)
+    
+    _ = observable.subscribe { event in
+      switch event {
+      case let .next(image):
+        print("onNext")
+        DispatchQueue.main.async {
+          self.imageView.image = image
+        }
+        
+      case let .error(error):
+        print("onError - \(error)")
+        
+      case .completed:
+        print("onCompleted")
       }
     }
   }
