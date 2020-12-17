@@ -41,4 +41,22 @@ extension Array: Playable where Element: Playable {
   }
 }
 
+// -----
 
+func playDelayed<T: Playable>(_ movie: T, delay: Double) {
+  movie.play()
+}
+
+let movie3: Movie? = movie1
+playDelayed(movie3, delay: 3.0)
+
+extension Optional: Playable where Wrapped: Playable {
+  func play() {
+    switch self {
+    case let movie?:
+      movie.play()
+    case nil:
+      break  
+    }
+  }
+}
