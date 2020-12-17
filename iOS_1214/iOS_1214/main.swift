@@ -115,11 +115,11 @@ var numberOfPlayers: [AnyGame: Int] = [
 protocol Shape {
   associatedtype T
 
-  func draw()
+  func draw() -> T
 }
 
 struct Rect: Shape {
-  typealias T = String
+  // typealias T = Void
 
   func draw() {
     print("Draw")
@@ -133,9 +133,9 @@ struct AnyShape: Shape {
 
   typealias T = Void
 
-  let _draw: () -> Void
+  let _draw: () -> T
 
-  init<S: Shape>(_ shape: S) {
+  init<S>(_ shape: S) where S: Shape, T == S.T {
     _draw = shape.draw
   }
 }
