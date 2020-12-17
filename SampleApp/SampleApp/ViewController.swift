@@ -1,5 +1,7 @@
 import UIKit
 
+let IMAGE_URL = URL(string: "https://picsum.photos/500/500")!
+
 class ViewController: UIViewController {
   @IBOutlet var imageView: UIImageView!
   @IBOutlet var timeLabel: UILabel!
@@ -12,6 +14,14 @@ class ViewController: UIViewController {
     }
   }
   
-  @IBAction func onLoad(_ sender: UIButton) {}
+  // 1. 동기 버전
+  @IBAction func onLoad(_ sender: UIButton) {
+    let data = try! Data(contentsOf: IMAGE_URL)
+    
+    if let image = UIImage(data: data) {
+      imageView.image = image
+    }
+  }
+  
+  
 }
-
