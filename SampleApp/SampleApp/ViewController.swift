@@ -20,8 +20,7 @@ class ViewController: UIViewController {
   //     => URLSession
   
   func loadImageFromURL(_ url: URL, completion: @escaping (UIImage?, Error?) -> Void) {
-    URLSession.shared.dataTask(with: url) { (data, response, error) in
-      
+    let task = URLSession.shared.dataTask(with: url) { (data, response, error) in
       if let error = error {
         completion(nil, error)
         return
@@ -39,6 +38,8 @@ class ViewController: UIViewController {
       
       completion(image, nil)
     }
+    
+    task.resume()
   }
   
   
