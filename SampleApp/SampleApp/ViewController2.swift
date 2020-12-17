@@ -19,6 +19,7 @@ import RxSwift
 // - Rx에서 문제가 발생하는 이유
 //   : Observer가 Observable을 구독하면 생성되는 이벤트 스트림이 해지되기 전까지
 //     클로저는 파괴되지 않습니다.
+//   - DisposeBag
 
 class ViewController2: UIViewController {
   @IBOutlet var searchBar: UISearchBar!
@@ -34,6 +35,8 @@ class ViewController2: UIViewController {
   var disposeBag = DisposeBag()
   // disposeBag의 참조 계수가 0이 될 때, disposeBag에 담긴 Disposable이 파괴됩니다.
 
+  let compositeDisposable = CompositeDisposable()
+
   override func viewDidLoad() {
     super.viewDidLoad()
 
@@ -41,6 +44,14 @@ class ViewController2: UIViewController {
 
     //     filter: (T? -> Bool)  /  T?
     // compactMap:  T -> T?      /  T
+
+    let d = searchBar.rx.text
+      .compactMap { $0 }
+      .subscribe(onNext: { (text: String) in
+        self.label.text = text
+      })
+
+    _ = compositeDisposable.insert(d)
 
     searchBar.rx.text
       .compactMap { $0 }
@@ -89,6 +100,8 @@ class ViewController2: UIViewController {
 
   override func viewWillDisappear(_ animated: Bool) {
     // disposable?.dispose()
-    disposeBag = DisposeBag()
+     disposeBag = DisposeBag()
+
+    compositeDisposable.dispose()
   }
 }
