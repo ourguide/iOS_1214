@@ -56,7 +56,6 @@ api.getJSON { result in
 sleep(1)
 #endif
 
-// func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask
 protocol Session {
   associatedtype Task: DataTask
 
@@ -94,6 +93,7 @@ final class GithubAPI<S: Session> {
   }
 }
 
+#if false
 let api = GithubAPI(session: URLSession.shared)
 api.getJSON { result in
   switch result {
@@ -113,3 +113,34 @@ api.getJSON { result in
 }
 
 sleep(1)
+#endif
+
+struct TestTask: DataTask {
+  func resume() {}
+}
+
+struct TestSession: Session {
+  typealias Task = TestTask
+
+  func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> TestTask {
+    return TestTask()
+  }
+}
+
+let api = GithubAPI(session: TestSession())
+api.getJSON { result in
+  switch result {
+  case let .success(data):
+    print("Data - \(data)")
+
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+    if let user = try? decoder.decode(User.self, from: data) {
+      print(user)
+    }
+
+  case let .failure(error):
+    print("Error - \(error)")
+  }
+}
