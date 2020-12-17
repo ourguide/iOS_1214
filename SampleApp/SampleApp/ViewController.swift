@@ -49,8 +49,6 @@ class ViewController: UIViewController {
   //  - 예제로 만들어야 함
   //    : progressBar
 
-  
-  
   @IBAction func onLoad(_ sender: Any) {
     let url = URL(string: "https://api.github.com/users/apple")!
     

@@ -35,7 +35,7 @@ class ViewController2: UIViewController {
   var disposeBag = DisposeBag()
   // disposeBag의 참조 계수가 0이 될 때, disposeBag에 담긴 Disposable이 파괴됩니다.
 
-  let compositeDisposable = CompositeDisposable()
+  // let compositeDisposable = CompositeDisposable()
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -45,6 +45,51 @@ class ViewController2: UIViewController {
     //     filter: (T? -> Bool)  /  T?
     // compactMap:  T -> T?      /  T
 
+    // 클로저로 인해서 ViewController가 제대로 파괴되지 않는 문제
+    //  해결 방법
+    // 3) self를 캡쳐하지 말고, 사용하는 객체를 캡쳐하면 됩니다.
+    //    사용하는 객체의 참조 계수가 올라갑니다.
+    searchBar.rx.text
+      .compactMap { $0 }
+      .subscribe(onNext: { [label](text: String) in
+
+        label?.text = text
+
+        // self?.label.text = text
+      })
+      .disposed(by: disposeBag)
+    
+    
+    // 2) Rx 에서는 이벤트 스트림이 파괴될 때, 클로저도 해지됩니다.
+    //    명시적으로 이벤트 스트림을 dispose 하면 해결할 수 있다.
+    //    : disposeBag = DisposeBag()
+    #if false
+    searchBar.rx.text
+      .compactMap { $0 }
+      .subscribe(onNext: { (text: String) in
+
+        self.label.text = text
+
+        // self?.label.text = text
+      })
+      .disposed(by: disposeBag)
+    #endif
+    
+    // 1) weak / unowned 를 통해 self를 사용하자.
+    #if false
+    let d = searchBar.rx.text
+      .compactMap { $0 }
+      .subscribe(onNext: { [weak self] (text: String) in
+        guard let self = self else {
+          return
+        }
+        self.label.text = text
+
+        // self?.label.text = text
+      })
+    #endif
+
+    #if false
     let d = searchBar.rx.text
       .compactMap { $0 }
       .subscribe(onNext: { (text: String) in
@@ -59,6 +104,7 @@ class ViewController2: UIViewController {
         self.label.text = text
       })
       .disposed(by: disposeBag)
+    #endif
 
     #if false
     _ = searchBar.rx.text
@@ -100,9 +146,9 @@ class ViewController2: UIViewController {
 
   override func viewWillDisappear(_ animated: Bool) {
     // disposable?.dispose()
-    disposeBag = DisposeBag()
+    // disposeBag = DisposeBag()
 
-    compositeDisposable.dispose()
-    print("viewWillDisappear")
+    // compositeDisposable.dispose()
+    // print("viewWillDisappear")
   }
 }
