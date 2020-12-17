@@ -14,6 +14,47 @@ class ViewController: UIViewController {
     }
   }
   
+  
+  // 3. 비동기 - 취소가 가능해야 한다.
+  //   : Task
+  //     => URLSession
+  
+  func loadImageFromURL(_ url: URL, completion: @escaping (UIImage?, Error?) -> Void) {
+    URLSession.shared.dataTask(with: url) { (data, response, error) in
+      
+      if let error = error {
+        completion(nil, error)
+        return
+      }
+      
+      guard let data = data else {
+        completion(nil, NSError(domain: "Invalid Data(null)", code: 0, userInfo: [:]))
+        return
+      }
+      
+      guard let image = UIImage(data: data) else {
+        completion(nil, NSError(domain: "Invalid Data", code: 0, userInfo: [:]))
+        return
+      }
+      
+      completion(image, nil)
+    }
+  }
+  
+  
+  @IBAction func onLoad(_ sender: UIButton) {
+    loadImageFromURL(IMAGE_URL) { image, _ in
+      
+      DispatchQueue.main.async {
+        self.imageView.image = image
+      }
+    }
+  }
+  
+  
+  // 2. 비동기 - GCD
+  // - 아래 처럼 만들었을 경우, 비동기 요청에 대한 취소가 불가능하다.
+  #if false
   func loadImageFromURL(_ url: URL, completion: @escaping (UIImage?, Error?) -> Void) {
     DispatchQueue.global().async {
       do {
@@ -31,8 +72,6 @@ class ViewController: UIViewController {
     }
   }
   
-  // 2. 비동기 - GCD
-  
   @IBAction func onLoad(_ sender: UIButton) {
     loadImageFromURL(IMAGE_URL) { image, _ in
       
@@ -41,6 +80,7 @@ class ViewController: UIViewController {
       }
     }
   }
+  #endif
   
   // 1. 동기 버전
   //  문제점: UI 스레드에서 오래 걸리는 작업을 수행할 경우,
