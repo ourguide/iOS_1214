@@ -9,7 +9,7 @@ final class CachedValue<Element> {
   private var currentValue: Element
   
   public var value: Element {
-    let isRefresh = lastLoaded.timeIntervalSinceNow > timeToLive
+    let isRefresh = abs(lastLoaded.timeIntervalSinceNow) > timeToLive
     if isRefresh {
       currentValue = load()
       lastLoaded = Date()
@@ -33,3 +33,12 @@ let cache = CachedValue(timeToLive: 1) { () -> Int in
   n += 1
   return n
 }
+
+print(cache.value)
+print(cache.value)
+sleep(1)
+print(cache.value)
+print(cache.value)
+sleep(1)
+print(cache.value)
+print(cache.value)
