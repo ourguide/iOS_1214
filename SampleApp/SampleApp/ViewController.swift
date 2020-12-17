@@ -15,7 +15,40 @@ class ViewController: UIViewController {
     }
   }
   
-  // 4. Rx - Reactive eXtension
+  // 6. 비동기 흐름 제어
+  //  - Bolts / PromiseKit
+
+  func getData(url: URL) -> Observable<Data> {
+    return Observable.create { observer -> Disposable in
+      let task = URLSession.shared.dataTask(with: url) { data, _, error in
+        if let error = error {
+          observer.onError(error)
+          return
+        }
+        
+        guard let data = data else {
+          observer.onError(NSError(domain: "Invalid Data(null)", code: 0, userInfo: [:]))
+          return
+        }
+      
+        observer.onNext(data)
+        observer.onCompleted()
+      }
+      
+      task.resume()
+      
+      return Disposables.create {
+        task.cancel()
+      }
+      
+    }
+  }
+  
+  @IBAction func onLoad(_ sender: Any) {}
+  
+  @IBAction func onCancel(_ sender: Any) {}
+
+  // 5. Rx - Reactive eXtension
   //    http://reactivex.io/
   //  Rx: 비동기 기반의 이벤트 처리 코드를 작성하기 위한 라이브러리 입니다.
   //    - 콜백 방식과는 달리 발생하는 이벤트를 이벤트 스트림에 전달하고,
@@ -56,37 +89,6 @@ class ViewController: UIViewController {
   
   // func loadImageFromURL(_ url: URL, completion: @escaping (UIImage?, Error?) -> Void)
   #if false
-  func loadImageFromURL(_ url: URL) -> Observable<Int> {
-    return Observable.create { observer -> Disposable in
-      observer.onNext(10)
-      sleep(1)
-      observer.onNext(20)
-      sleep(1)
-      observer.onNext(30)
-      sleep(1)
-      observer.onNext(40)
-      observer.onCompleted()
-      
-      return Disposables.create()
-    }
-  }
-  
-  @IBAction func onLoad(_ sender: UIButton) {
-    let observable = loadImageFromURL(IMAGE_URL)
-    
-    _ = observable.subscribe { event in
-      switch event {
-      case let .next(data):
-        print("onNext: \(data)")
-      case let .error(error):
-        print("onError: \(error)")
-      case .completed:
-        print("onComplete")
-      }
-    }
-  }
-  #endif
-  
   func loadImageFromURL(_ url: URL) -> Observable<UIImage> {
     return Observable.create { observer -> Disposable in
       
@@ -118,8 +120,6 @@ class ViewController: UIViewController {
         // 사용자가 명시적으로 작업을 취소하거나, 자원이 파괴하기 위해서 호출해야 하는 작업을 정의합니다.
         task.cancel()
       }
-      
-      
     }
   }
   
@@ -160,6 +160,40 @@ class ViewController: UIViewController {
         }
       }
   }
+  #endif
+  
+  // 4. RxSwift
+  #if false
+  func loadImageFromURL(_ url: URL) -> Observable<Int> {
+    return Observable.create { observer -> Disposable in
+      observer.onNext(10)
+      sleep(1)
+      observer.onNext(20)
+      sleep(1)
+      observer.onNext(30)
+      sleep(1)
+      observer.onNext(40)
+      observer.onCompleted()
+      
+      return Disposables.create()
+    }
+  }
+  
+  @IBAction func onLoad(_ sender: UIButton) {
+    let observable = loadImageFromURL(IMAGE_URL)
+    
+    _ = observable.subscribe { event in
+      switch event {
+      case let .next(data):
+        print("onNext: \(data)")
+      case let .error(error):
+        print("onError: \(error)")
+      case .completed:
+        print("onComplete")
+      }
+    }
+  }
+  #endif
   
   // 3. 비동기 - 취소가 가능해야 한다.
   //   : Task
