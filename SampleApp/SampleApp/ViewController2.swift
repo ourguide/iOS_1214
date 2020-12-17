@@ -16,11 +16,9 @@ import RxSwift
 //      weak                       - 참조하는 객체가 파괴될 경우, nil을 반환합니다.
 //                                   self가 Optional 됩니다.
 
-
 // - Rx에서 문제가 발생하는 이유
 //   : Observer가 Observable을 구독하면 생성되는 이벤트 스트림이 해지되기 전까지
 //     클로저는 파괴되지 않습니다.
-
 
 class ViewController2: UIViewController {
   @IBOutlet var searchBar: UISearchBar!
@@ -31,8 +29,10 @@ class ViewController2: UIViewController {
   deinit {
     print("ViewController2가 해지되었음.")
   }
-  
-  var disposable: Disposable?
+
+  // var disposable: Disposable?
+  var disposeBag = DisposeBag()
+  // disposeBag의 참조 계수가 0이 될 때, disposeBag에 담긴 Disposable이 파괴됩니다.
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -42,17 +42,17 @@ class ViewController2: UIViewController {
     //     filter: (T? -> Bool)  /  T?
     // compactMap:  T -> T?      /  T
 
-    disposable = searchBar.rx.text
+    searchBar.rx.text
       .compactMap { $0 }
       .subscribe(onNext: { (text: String) in
         self.label.text = text
       })
-    
-    
+      .disposed(by: disposeBag)
+
     #if false
     _ = searchBar.rx.text
       .compactMap { $0 }
-      .subscribe(onNext: { [weak self](text: String) in
+      .subscribe(onNext: { [weak self] (text: String) in
         self?.label.text = text
       })
     #endif
@@ -86,8 +86,9 @@ class ViewController2: UIViewController {
       }
     #endif
   }
-  
+
   override func viewWillDisappear(_ animated: Bool) {
-    disposable?.dispose()
+    // disposable?.dispose()
+    disposeBag = DisposeBag()
   }
 }
