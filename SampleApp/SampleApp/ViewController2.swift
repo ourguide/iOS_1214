@@ -100,7 +100,7 @@ class ViewController2: UIViewController {
 
   override func viewWillDisappear(_ animated: Bool) {
     // disposable?.dispose()
-     disposeBag = DisposeBag()
+    disposeBag = DisposeBag()
 
     compositeDisposable.dispose()
   }
