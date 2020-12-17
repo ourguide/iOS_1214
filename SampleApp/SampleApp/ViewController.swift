@@ -30,6 +30,27 @@ class ViewController: UIViewController {
     let avatarUrl: String
   }
   
+  // 1번 작업 - 비동기
+  // 2번 작업 - 비동기
+  
+  //
+  // 조건 2: 2번 수행
+  
+  // 조건 ->       [조건 1: 1번 완료 - 2번 완료]
+  //             [조건 2: 2번]
+  
+  // 1)
+  // User가 있으면 -> getUser -> getImage
+  // User가 없으면 -> getImage
+  
+  // 2) 1번 작업 / 2번 작업
+  //  1번 작업 -> User
+  //  2번 작업 -> Dog
+  //  - 예제로 만들어야 함
+  //    : progressBar
+
+  
+  
   @IBAction func onLoad(_ sender: Any) {
     let url = URL(string: "https://api.github.com/users/apple")!
     
