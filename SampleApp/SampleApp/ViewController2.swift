@@ -103,5 +103,6 @@ class ViewController2: UIViewController {
     disposeBag = DisposeBag()
 
     compositeDisposable.dispose()
+    print("viewWillDisappear")
   }
 }
