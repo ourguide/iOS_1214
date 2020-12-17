@@ -66,8 +66,6 @@ let result = validator.validate("helloworld")
 
 print(result)
 
-
-
 extension Validator {
   func combine(_ other: Validator<T>) -> Validator<T> {
     return Validator<T> { e in
@@ -79,3 +77,14 @@ extension Validator {
   }
 }
 
+// -----------------------------------------------------
+//      요구 사항             |         접근 방법
+// -----------------------------------------------------
+//      가벼운 다형성          |           enum
+//                         |
+//  다양한 타입과 동작해야 한다.  |           generic type
+//                         |
+//  정책의 변화가 필요한 타입이   |           클로저를 저장한 타입
+//  필요하다(Validator)      |
+//                         |
+//  복잡한 다형성, 기본 구현     |           protocol
