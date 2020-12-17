@@ -107,33 +107,58 @@ class ViewController: UIViewController {
         }
         
         observer.onNext(image)
+        observer.onCompleted()
+        
+        // onError 또는 onCompleted가 수행되기 전까지 자원은 해지되지 않습니다.
       }
       
       task.resume()
-      return Disposables.create()
+      
+      return Disposables.create {
+        // 사용자가 명시적으로 작업을 취소하거나, 자원이 파괴하기 위해서 호출해야 하는 작업을 정의합니다.
+        task.cancel()
+      }
+      
+      
     }
   }
   
-  @IBAction func onCancel(_ sender: Any) {}
+  @IBAction func onCancel(_ sender: Any) {
+    disposable?.dispose()
+  }
   
+  // Observable Lifecycle
+  //  - onNext(..)
+  //  - onNext(..)
+  
+  //  - onError( )
+  //    or
+  //  - onComplete()
+  
+  var disposable: Disposable?
   @IBAction func onLoad(_ sender: UIButton) {
     let observable = loadImageFromURL(IMAGE_URL)
     
-    _ = observable.subscribe { event in
-      switch event {
-      case let .next(image):
-        print("onNext")
-        DispatchQueue.main.async {
+    disposable = observable
+      .observe(on: MainScheduler.instance)
+      .subscribe { event in
+        switch event {
+        case let .next(image):
+          print("onNext")
+        
           self.imageView.image = image
+        
+        // DispatchQueue.main.async {
+        //   self.imageView.image = image
+        // }
+        
+        case let .error(error):
+          print("onError - \(error)")
+        
+        case .completed:
+          print("onCompleted")
         }
-        
-      case let .error(error):
-        print("onError - \(error)")
-        
-      case .completed:
-        print("onCompleted")
       }
-    }
   }
   
   // 3. 비동기 - 취소가 가능해야 한다.
