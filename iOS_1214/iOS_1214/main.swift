@@ -1,159 +1,44 @@
 import Foundation
 
-// Swift Pattern
-// - Dependency Injection: 테스트 용이성
+// Conditional Comformance - 조건부 순응
 
-struct User: Codable {
-  let login: String
-  let id: Int
-  let avatarUrl: String
-  let name: String
-  let location: String
-  let email: String?
+// 내부의 모든 속성이 Equtable을 만족하면, Movie도 자동으로 Equtable을 생성할 수 있다.
+struct Movie: Equatable {
+  let title: String
+  let rating: Float
+
+  func play() {
+    print("Movie - \(title)-\(rating)")
+  }
 }
 
-#if false
-final class GithubAPI {
-  let session: URLSession
+let movie1 = Movie(title: "타이타닉", rating: 4.9)
+let movie2 = Movie(title: "타이타닉", rating: 4.9)
 
-  init(session: URLSession) {
-    self.session = session
-  }
+if movie1 == movie2 {
+  print("같은 영화입니다.")
+}
 
-  func getJSON(complection: @escaping (Result<Data, Error>) -> Void) {
-    let url = URL(string: "https://api.github.com/users/apple")!
+let movies: [Movie] = [
+  movie1,
+  movie2,
+]
+movies.play()
 
-    let task = session.dataTask(with: url) { data, _, error in
-      if let error = error {
-        complection(.failure(error))
-      } else if let data = data {
-        complection(.success(data))
-      }
+// 해결 방법
+protocol Playable {
+  func play()
+}
+
+extension Movie: Playable {}
+
+// 조건부 순응
+extension Array: Playable where Element: Playable {
+  func play() {
+    for e in self {
+      e.play()
     }
-
-    task.resume()
   }
 }
 
-let api = GithubAPI(session: URLSession.shared)
-api.getJSON { result in
-  switch result {
-  case let .success(data):
-    print("Data - \(data)")
 
-    let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-    if let user = try? decoder.decode(User.self, from: data) {
-      print(user)
-    }
-
-  case let .failure(error):
-    print("Error - \(error)")
-  }
-}
-
-sleep(1)
-#endif
-
-protocol Session {
-  associatedtype Task: DataTask
-
-  func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> Task
-}
-
-protocol DataTask {
-  func resume()
-}
-
-extension URLSession: Session {}
-extension URLSessionDataTask: DataTask {}
-
-final class GithubAPI<S: Session> {
-  let session: S
-
-  typealias Task = URLSessionDataTask
-
-  init(session: S) {
-    self.session = session
-  }
-
-  func getJSON(complection: @escaping (Result<Data, Error>) -> Void) {
-    let url = URL(string: "https://api.github.com/users/apple")!
-
-    let task = session.dataTask(with: url) { data, _, error in
-      if let error = error {
-        complection(.failure(error))
-      } else if let data = data {
-        complection(.success(data))
-      }
-    }
-
-    task.resume()
-  }
-}
-
-#if false
-let api = GithubAPI(session: URLSession.shared)
-api.getJSON { result in
-  switch result {
-  case let .success(data):
-    print("Data - \(data)")
-
-    let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-    if let user = try? decoder.decode(User.self, from: data) {
-      print(user)
-    }
-
-  case let .failure(error):
-    print("Error - \(error)")
-  }
-}
-
-sleep(1)
-#endif
-
-struct TestTask: DataTask {
-  let completion: (Data?, URLResponse?, Error?) -> Void
-
-  func resume() {
-    let dummyUser = User(login: "test", id: 10, avatarUrl: "", name: "Test User", location: "Seoul", email: nil)
-
-    let encoder = JSONEncoder()
-    encoder.keyEncodingStrategy = .convertToSnakeCase
-
-    let data = try! encoder.encode(dummyUser)
-    completion(data, nil, nil)
-  }
-}
-
-struct TestSession: Session {
-  typealias Task = TestTask
-
-  func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> TestTask {
-    return TestTask(completion: completionHandler)
-  }
-}
-
-// let api = GithubAPI(session: URLSession.shared)
-let api = GithubAPI(session: TestSession())
-api.getJSON { result in
-  switch result {
-  case let .success(data):
-    print("Data - \(data)")
-
-    let decoder = JSONDecoder()
-    decoder.keyDecodingStrategy = .convertFromSnakeCase
-
-    if let user = try? decoder.decode(User.self, from: data) {
-      print(user)
-    }
-
-  case let .failure(error):
-    print("Error - \(error)")
-  }
-}
-
-sleep(1)
