@@ -18,6 +18,51 @@ class ViewController: UIViewController {
   // 6. 비동기 흐름 제어
   //  - Bolts / PromiseKit
 
+  // 1. api.github.com/users/apple -> getData
+  // 2. Data(JSON) -> User                    / Observable<Data>   ->   Observable<User>                                : map
+  // 3. User.avatarUrl -> getData             / Observable<User>   ->   Observable<Observable<Data>> -> Observable<Data> : flatMap
+  // 3. Data(Image) -> UIImage                / Observable<Data>   ->   Observable<UIImage>                             : map
+  // 4. imageView.image = image
+  
+  struct User: Decodable {
+    let id: Int
+    let login: String
+    let avatarUrl: String
+  }
+  
+  @IBAction func onLoad(_ sender: Any) {
+    let url = URL(string: "https://api.github.com/users/apple")!
+    
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+    
+    _ = getData(url: url)
+      .map { (data: Data) -> User in
+        try! decoder.decode(User.self, from: data)
+      }
+      .flatMap { (user: User) -> Observable<Data> in
+        let url = URL(string: user.avatarUrl)!
+        
+        return self.getData(url: url)
+      }
+      .map { (data: Data) -> UIImage in
+        UIImage(data: data)!
+      }
+      .observe(on: MainScheduler.instance)
+      .subscribe { event in
+        switch event {
+        case let .next(data):
+          self.imageView.image = data
+          print(type(of: data))
+          print(data)
+        case let .error(error):
+          print(error)
+        case .completed:
+          print("completed")
+        }
+      }
+  }
+  
   func getData(url: URL) -> Observable<Data> {
     return Observable.create { observer -> Disposable in
       let task = URLSession.shared.dataTask(with: url) { data, _, error in
@@ -40,11 +85,8 @@ class ViewController: UIViewController {
       return Disposables.create {
         task.cancel()
       }
-      
     }
   }
-  
-  @IBAction func onLoad(_ sender: Any) {}
   
   @IBAction func onCancel(_ sender: Any) {}
 
