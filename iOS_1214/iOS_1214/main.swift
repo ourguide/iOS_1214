@@ -40,16 +40,31 @@ let cache2 = CachedValue(timeToLive: 1) { () -> Int in
   return n
 }
 
-#if false
 if cache1 == cache2 {}
-
 if cache1 > cache2 {}
 
 let data: Set<CachedValue> = [
   cache1,
   cache2,
 ]
-#endif
+
+extension CachedValue: Equatable where Element: Equatable {
+  static func == (lhs: CachedValue<Element>, rhs: CachedValue<Element>) -> Bool {
+    return lhs.value == rhs.value
+  }
+}
+
+extension CachedValue: Comparable where Element: Comparable {
+  static func < (lhs: CachedValue<Element>, rhs: CachedValue<Element>) -> Bool {
+    return lhs.value < rhs.value
+  }
+}
+
+extension CachedValue: Hashable where Element: Hashable {
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(value)
+  }
+}
 
 #if false
 print(cache.value)
