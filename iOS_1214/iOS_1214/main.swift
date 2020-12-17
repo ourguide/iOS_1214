@@ -116,17 +116,28 @@ sleep(1)
 #endif
 
 struct TestTask: DataTask {
-  func resume() {}
+  let completion: (Data?, URLResponse?, Error?) -> Void
+
+  func resume() {
+    let dummyUser = User(login: "test", id: 10, avatarUrl: "", name: "Test User", location: "Seoul", email: nil)
+
+    let encoder = JSONEncoder()
+    encoder.keyEncodingStrategy = .convertToSnakeCase
+
+    let data = try! encoder.encode(dummyUser)
+    completion(data, nil, nil)
+  }
 }
 
 struct TestSession: Session {
   typealias Task = TestTask
 
   func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> TestTask {
-    return TestTask()
+    return TestTask(completion: completionHandler)
   }
 }
 
+// let api = GithubAPI(session: URLSession.shared)
 let api = GithubAPI(session: TestSession())
 api.getJSON { result in
   switch result {
@@ -144,3 +155,5 @@ api.getJSON { result in
     print("Error - \(error)")
   }
 }
+
+sleep(1)
