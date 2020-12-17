@@ -1,7 +1,7 @@
 
 import Foundation
 
-#if false
+#if true
 struct MailAddress {
   let value: String
 }
@@ -36,13 +36,19 @@ extension MailValidator {
 // ---------- 프로토콜 합성을 사용하는 방법
 
 // MailValidator를 만족하는 타입이 Mailer의 프로토콜도 만족하고 있다면...
+struct Dummy: Mailer {}
 extension MailValidator where Self: Mailer {
   func send(email: Email) throws {
-    // print("MailValidator - \(email)")
-
     try validate(email: email)
 
-    try send(email: email) // 동적 바인딩
+    Dummy().send(email: email)
+  }
+
+  // 다른 이름을 사용해서, 기본 구현을 이용한다.
+  func sendWithValidate(email: Email) throws {
+    try validate(email: email)
+
+    try send(email: email)
   }
 }
 
@@ -50,9 +56,9 @@ struct SMTPClient: Mailer, MailValidator {}
 
 let client = SMTPClient()
 try client.send(email: Email(subject: "Hello",
-                             body: "Hello world",
-                             to: [MailAddress(value: "hello@gmail.com")],
-                             from: MailAddress(value: "test@gmail.com")))
+                                         body: "Hello world",
+                                         to: [MailAddress(value: "hello@gmail.com")],
+                                         from: MailAddress(value: "test@gmail.com")))
 
 #endif
 
@@ -102,6 +108,7 @@ let b = Derived()
 b.foo()
 #endif
 
+#if false
 // https://forums.swift.org/t/calling-default-implementation-of-protocols/328
 // 해결 방법
 // 1) 다른 이름을 사용해라.
@@ -123,12 +130,11 @@ extension Base {
 class Derived: Base {
   func foo() {
     print("Derived foo")
-    
-    struct DefaultBase : Base {}
+
+    struct DefaultBase: Base {}
     DefaultBase().foo()
-    
   }
-  
+
 //  func callFoo() {
 //    print("Derived foo")
 //    foo()
@@ -138,3 +144,4 @@ class Derived: Base {
 let b = Derived()
 b.foo()
 // b.callFoo()
+#endif
