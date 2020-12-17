@@ -55,7 +55,7 @@ extension MailValidator where Self: Mailer {
 struct SMTPClient: Mailer, MailValidator {}
 
 let client = SMTPClient()
-try client.send(email: Email(subject: "Hello",
+try client.sendWithValidate(email: Email(subject: "Hello",
                                          body: "Hello world",
                                          to: [MailAddress(value: "hello@gmail.com")],
                                          from: MailAddress(value: "test@gmail.com")))
