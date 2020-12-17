@@ -15,6 +15,13 @@ class ViewController: UIViewController {
   }
   
   // 1. 동기 버전
+  //  문제점: UI 스레드에서 오래 걸리는 작업을 수행할 경우,
+  //        UI의 업데이트가 멈추는 문제가 발생합니다.
+  //  해결방법
+  //    - 비동기로 처리해야 합니다.
+  //      비동기: 별도의 백그라운드 스레드를 통해 문제를 해결해야 합니다.
+  //           GCD library
+  #if false
   @IBAction func onLoad(_ sender: UIButton) {
     let data = try! Data(contentsOf: IMAGE_URL)
     
@@ -22,6 +29,5 @@ class ViewController: UIViewController {
       imageView.image = image
     }
   }
-  
-  
+  #endif
 }
