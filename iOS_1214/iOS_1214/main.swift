@@ -1,62 +1,35 @@
+
 import Foundation
 
-// Conditional Comformance - 조건부 순응
-
-// 내부의 모든 속성이 Equtable을 만족하면, Movie도 자동으로 Equtable을 생성할 수 있다.
-struct Movie: Equatable {
-  let title: String
-  let rating: Float
-
-  func play() {
-    print("Movie - \(title)-\(rating)")
-  }
-}
-
-let movie1 = Movie(title: "타이타닉", rating: 4.9)
-let movie2 = Movie(title: "타이타닉", rating: 4.9)
-
-if movie1 == movie2 {
-  print("같은 영화입니다.")
-}
-
-let movies: [Movie] = [
-  movie1,
-  movie2,
-]
-movies.play()
-
-// 해결 방법
-protocol Playable {
-  func play()
-}
-
-extension Movie: Playable {}
-
-// 조건부 순응
-extension Array: Playable where Element: Playable {
-  func play() {
-    for e in self {
-      e.play()
+final class CachedValue<Element> {
+  private let load: () -> Element
+  private var lastLoaded: Date
+  
+  private var timeToLive: Double
+  private var currentValue: Element
+  
+  public var value: Element {
+    let isRefresh = lastLoaded.timeIntervalSinceNow > timeToLive
+    if isRefresh {
+      currentValue = load()
+      lastLoaded = Date()
     }
+    
+    return currentValue
+  }
+  
+  init(timeToLive: Double, load: @escaping () -> Element) {
+    self.timeToLive = timeToLive
+    self.load = load
+  
+    currentValue = load()
+    lastLoaded = Date()
   }
 }
 
-// -----
-
-func playDelayed<T: Playable>(_ movie: T, delay: Double) {
-  movie.play()
-}
-
-let movie3: Movie? = movie1
-playDelayed(movie3, delay: 3.0)
-
-extension Optional: Playable where Wrapped: Playable {
-  func play() {
-    switch self {
-    case let movie?:
-      movie.play()
-    case nil:
-      break  
-    }
-  }
+var n = 0
+let cache = CachedValue(timeToLive: 1) { () -> Int in
+  print("값이 갱신되었습니다")
+  n += 1
+  return n
 }
