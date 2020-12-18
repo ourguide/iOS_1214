@@ -23,6 +23,7 @@ import RxSwift
 //   - DisposeBag
 
 struct User: Decodable {
+  let name: String
   let login: String
   let avatarUrl: String
   let type: String
