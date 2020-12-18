@@ -49,10 +49,37 @@ class ViewController: UIViewController {
   // Subject - 데이터를 가지고 있는 형태의 Observable/Observer
   let user = BehaviorSubject<User?>(value: nil)
   
+  // take(1): 한번 수행되고, 이벤트 스트림이 파괴되기 때문에 순환참조가 발생하지 않습니다.
   @IBAction func onLoad(_ sender: Any) {
     //   <user>  ->  (nil) ->    getUserAndAvatarImage: getUser -> <user> -> getAvatarImage -> UIImage Update
     //                         getAvatarImage
-
+    _ = user
+      .debug()
+      .take(1)
+      .flatMap { [getAvatarImge, getUser] (user) -> Observable<UIImage> in
+        if let user = user {
+          print("getAvatarImage")
+          return getAvatarImge(user)
+        } else {
+          print("getUser + getAvatarImage")
+          return getUser("apple")
+            .map { [weak self] newUser -> User in
+              self?.user.onNext(newUser)
+              return newUser
+            }
+            .flatMap(getAvatarImge)
+        }
+      }
+      .observe(on: MainScheduler.instance)
+      .subscribe(onNext: { [weak self] image in
+        self?.imageView.image = image
+      })
+  }
+  
+  #if false
+  @IBAction func onLoad(_ sender: Any) {
+    //   <user>  ->  (nil) ->    getUserAndAvatarImage: getUser -> <user> -> getAvatarImage -> UIImage Update
+    //                         getAvatarImage
     _ = user
       .debug()
       .take(1)
@@ -75,6 +102,7 @@ class ViewController: UIViewController {
         self.imageView.image = image
       })
   }
+  #endif
   
   @IBAction func onCancel(_ sender: Any) {}
   
