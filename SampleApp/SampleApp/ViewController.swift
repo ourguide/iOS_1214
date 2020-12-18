@@ -7,13 +7,67 @@ class ViewController: UIViewController {
   @IBOutlet var imageView: UIImageView!
   @IBOutlet var timeLabel: UILabel!
   
+  @IBOutlet var loadingView: UIActivityIndicatorView!
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-      self.timeLabel.text = "\(Date().timeIntervalSince1970)"
+//    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+//      self.timeLabel.text = "\(Date().timeIntervalSince1970)"
+//    }
+  }
+  
+  // 1)
+  // User가 있으면 -> getUser -> getImage
+  // User가 없으면 -> getImage
+  
+  // 2) 1번 작업 / 2번 작업
+  //   로딩  O =>   1번 작업 -> 비동기 -> UI 업데이트    =>  로딩 X
+  //               2번 작업 -> 비동기 -> UI 업데이트
+  
+  func job(name: String, delay: TimeInterval) -> Observable<String> {
+    return Observable.create { observer -> Disposable in
+      
+      DispatchQueue.global().async {
+        Thread.sleep(forTimeInterval: delay)
+        
+        observer.onNext(name)
+        observer.onCompleted()
+      }
+      
+      return Disposables.create()
     }
   }
+  
+  @IBAction func onLoad(_ sender: Any) {
+    let job1 = job(name: "First Job", delay: 2)
+      .observe(on: MainScheduler.instance)
+      .map { [timeLabel] (name: String) -> String in
+        print(name)
+        timeLabel?.text = name
+        return name
+      }
+    
+    let job2 = job(name: "Second Job", delay: 5)
+      .observe(on: MainScheduler.instance)
+      .map { [timeLabel] (name: String) -> String in
+        print(name)
+        timeLabel?.text = name
+        return name
+      }
+    
+    _ = Observable.zip(job1, job2)
+      .observe(on: MainScheduler.instance)
+      .do(onSubscribe: { [loadingView] in
+        loadingView?.isHidden = false
+      })
+      .subscribe(onNext: { [loadingView] jobName1, jobName2 in
+        print("onNext: \(jobName1) / \(jobName2)")
+        loadingView?.isHidden = true
+      })
+  }
+  
+  @IBAction func onCancel(_ sender: Any) {}
   
   // 6. 비동기 흐름 제어
   //  - Bolts / PromiseKit
@@ -30,25 +84,7 @@ class ViewController: UIViewController {
     let avatarUrl: String
   }
   
-  // 1번 작업 - 비동기
-  // 2번 작업 - 비동기
-  
-  //
-  // 조건 2: 2번 수행
-  
-  // 조건 ->       [조건 1: 1번 완료 - 2번 완료]
-  //             [조건 2: 2번]
-  
-  // 1)
-  // User가 있으면 -> getUser -> getImage
-  // User가 없으면 -> getImage
-  
-  // 2) 1번 작업 / 2번 작업
-  //  1번 작업 -> User
-  //  2번 작업 -> Dog
-  //  - 예제로 만들어야 함
-  //    : progressBar
-
+  #if false
   @IBAction func onLoad(_ sender: Any) {
     let url = URL(string: "https://api.github.com/users/apple")!
     
@@ -108,7 +144,8 @@ class ViewController: UIViewController {
   }
   
   @IBAction func onCancel(_ sender: Any) {}
-
+  #endif
+  
   // 5. Rx - Reactive eXtension
   //    http://reactivex.io/
   //  Rx: 비동기 기반의 이벤트 처리 코드를 작성하기 위한 라이브러리 입니다.
