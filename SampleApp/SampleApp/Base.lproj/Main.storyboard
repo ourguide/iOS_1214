@@ -42,13 +42,13 @@
                                 <rect key="frame" x="16" y="424.5" width="343" height="29"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dhJ-18-Vws">
-                                        <rect key="frame" x="0.0" y="0.0" width="316" height="29"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="343" height="29"/>
                                         <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="Mlk-B9-Dwh">
-                                        <rect key="frame" x="323" y="4.5" width="20" height="20"/>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="Mlk-B9-Dwh">
+                                        <rect key="frame" x="0.0" y="4.5" width="0.0" height="20"/>
                                     </activityIndicatorView>
                                 </subviews>
                             </stackView>

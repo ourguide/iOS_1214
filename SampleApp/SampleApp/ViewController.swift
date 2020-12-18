@@ -12,19 +12,100 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-//    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
-//      self.timeLabel.text = "\(Date().timeIntervalSince1970)"
-//    }
+    Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+      self.timeLabel.text = "\(Date().timeIntervalSince1970)"
+    }
   }
   
   // 1)
-  // User가 있으면 -> getUser -> getImage
-  // User가 없으면 -> getImage
+  // User가 없으면 -> getUser -> getImage
+  // User가 있으면 -> getImage
+  
+  func getUser(login: String) -> Observable<User> {
+    guard let url = URL(string: "https://api.github.com/users/\(login)") else {
+      return .empty()
+    }
+    
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+    
+    return getData(url: url)
+      .compactMap { data -> User? in
+        try? decoder.decode(User.self, from: data)
+      }
+  }
+  
+  func getAvatarImge(user: User) -> Observable<UIImage> {
+    guard let url = URL(string: user.avatarUrl) else {
+      return .empty()
+    }
+    
+    return getData(url: url)
+      .compactMap { data -> UIImage? in
+        UIImage(data: data)
+      }
+  }
+  
+  // Subject - 데이터를 가지고 있는 형태의 Observable/Observer
+  let user = BehaviorSubject<User?>(value: nil)
+  
+  @IBAction func onLoad(_ sender: Any) {
+    //   <user>  ->  (nil) ->    getUserAndAvatarImage: getUser -> <user> -> getAvatarImage -> UIImage Update
+    //                         getAvatarImage
+
+    _ = user
+      .take(1)
+      .flatMap { (user) -> Observable<UIImage> in
+        if let user = user {
+          print("getAvatarImage")
+          return self.getAvatarImge(user: user)
+        } else {
+          print("getUser + getAvatarImage")
+          return self.getUser(login: "apple")
+            .map { newUser -> User in
+              self.user.onNext(newUser)
+              return newUser
+            }
+            .flatMap(self.getAvatarImge(user:))
+        }
+      }
+      .observe(on: MainScheduler.instance)
+      .subscribe(onNext: { image in
+        self.imageView.image = image
+      })
+  }
+  
+  @IBAction func onCancel(_ sender: Any) {}
+  
+  func getData(url: URL) -> Observable<Data> {
+    return Observable.create { observer -> Disposable in
+      let task = URLSession.shared.dataTask(with: url) { data, _, error in
+        if let error = error {
+          observer.onError(error)
+          return
+        }
+        
+        guard let data = data else {
+          observer.onError(NSError(domain: "Invalid Data(null)", code: 0, userInfo: [:]))
+          return
+        }
+      
+        observer.onNext(data)
+        observer.onCompleted()
+      }
+      
+      task.resume()
+      
+      return Disposables.create {
+        task.cancel()
+      }
+    }
+  }
   
   // 2) 1번 작업 / 2번 작업
   //   로딩  O =>   1번 작업 -> 비동기 -> UI 업데이트    =>  로딩 X
   //               2번 작업 -> 비동기 -> UI 업데이트
-  
+  #if false
   func job(name: String, delay: TimeInterval) -> Observable<String> {
     return Observable.create { observer -> Disposable in
       
@@ -68,6 +149,7 @@ class ViewController: UIViewController {
   }
   
   @IBAction func onCancel(_ sender: Any) {}
+  #endif
   
   // 6. 비동기 흐름 제어
   //  - Bolts / PromiseKit
