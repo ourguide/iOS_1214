@@ -17,7 +17,6 @@ class ViewController5: UIViewController {
     super.viewDidLoad()
 
     // Do any additional setup after loading the view.
-
     // View -> ViewModel
     Observable.from([
       searchNameField.rx.controlEvent(.editingDidEndOnExit),
