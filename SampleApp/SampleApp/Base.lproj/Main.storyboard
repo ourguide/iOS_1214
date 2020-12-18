@@ -256,6 +256,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Sample3" id="jfY-AQ-X5M"/>
                     <connections>
+                        <outlet property="bottomMargin" destination="rqy-uI-Ogl" id="h1G-7h-bJW"/>
                         <outlet property="emailField" destination="r18-WV-d0N" id="6Se-8P-03O"/>
                         <outlet property="imageView" destination="YsR-bu-cOC" id="M95-yu-BTu"/>
                         <outlet property="loginButton" destination="0Dc-Y6-rFB" id="DOK-8n-dRd"/>

@@ -29,6 +29,8 @@ class ViewController3: UIViewController {
   // Subject
   let email = BehaviorSubject<String>(value: "xxxxx")
   
+  @IBOutlet var bottomMargin: NSLayoutConstraint!
+  
   // let email = PublishSubject<String>()
   
   override func viewDidLoad() {
@@ -78,6 +80,17 @@ class ViewController3: UIViewController {
       .map { !$0 }
       .drive(imageView.rx.isHidden)
       .disposed(by: disposeBag)
+    
+    // Soft Keyboard Notification
+    keyboardHeight()
+      .subscribe(onNext: { height in
+        self.bottomMargin.constant = height
+      })
+      .disposed(by: disposeBag)
+  }
+  
+  override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    view.endEditing(true)
   }
   
   #if false
@@ -141,24 +154,21 @@ class ViewController3: UIViewController {
   }
   #endif
   
-  
   func keyboardHeight() -> Observable<CGFloat> {
-    Observable.from([
-      NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
-        .map { notification -> CGFloat in
-          return 150.0
-        }
-      ,
-      NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
-        .map { notification -> CGFloat in
-          return 0
-        }
-    ])
-    .merge()
-    
-    
-    
+    Observable
+      .from([
+        NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
+          .map { notification -> CGFloat in
+            
+            (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.height ?? 0
+              
+          },
+        
+        NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
+          .map { _ -> CGFloat in
+            0
+          }
+      ])
+      .merge()
   }
-  
-  
 }
