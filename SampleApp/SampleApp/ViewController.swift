@@ -49,7 +49,9 @@ class ViewController: UIViewController {
   // Subject - 데이터를 가지고 있는 형태의 Observable/Observer
   let user = BehaviorSubject<User?>(value: nil)
   
-  // take(1): 한번 수행되고, 이벤트 스트림이 파괴되기 때문에 순환참조가 발생하지 않습니다.
+  // Observable => Single: 한번 수행되고 이벤트 스트림이 파괴된다.
+  
+  // take(1): 한번 수행되고, 이벤트 스트림이 파괴되기 때문에 순환참조가 발생하지 않습니다. - HTTP request
   @IBAction func onLoad(_ sender: Any) {
     //   <user>  ->  (nil) ->    getUserAndAvatarImage: getUser -> <user> -> getAvatarImage -> UIImage Update
     //                         getAvatarImage
@@ -73,6 +75,8 @@ class ViewController: UIViewController {
       .observe(on: MainScheduler.instance)
       .subscribe(onNext: { [weak self] image in
         self?.imageView.image = image
+      }, onError: { error in
+        
       })
   }
   

@@ -21,12 +21,82 @@ import RxSwift
 //     클로저는 파괴되지 않습니다.
 //   - DisposeBag
 
+struct User: Decodable {
+  let login: String
+  let avatarUrl: String
+  let type: String
+}
+
+struct UserSearchResponse: Decodable {
+  let totalCount: Int
+  let incompleteResults: Bool
+  let items: [User]
+}
+
 class ViewController2: UIViewController {
   @IBOutlet var searchBar: UISearchBar!
   @IBOutlet var label: UILabel!
 
   @IBOutlet var tableView: UITableView!
 
+  let disposeBag = DisposeBag()
+
+  lazy var decoder: JSONDecoder = {
+    let d = JSONDecoder()
+    d.keyDecodingStrategy = .convertFromSnakeCase
+    return d
+  }()
+
+  // 검색 API - https://api.github.com/search/users?q=\(login)
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    
+    searchUser(q: "apple")
+      .subscribe(onNext: { result in
+        print(result)
+      })
+      .disposed(by: disposeBag)
+    
+  }
+
+  func searchUser(q: String) -> Observable<UserSearchResponse> {
+    guard let url = URL(string: "https://api.github.com/search/users?q=\(q)") else {
+      return .empty()
+    }
+
+    return getData(url: url)
+      .compactMap { [decoder] data -> UserSearchResponse? in
+        try? decoder.decode(UserSearchResponse.self, from: data)
+      }
+  }
+
+  func getData(url: URL) -> Observable<Data> {
+    return Observable.create { observer -> Disposable in
+      let task = URLSession.shared.dataTask(with: url) { data, _, error in
+        if let error = error {
+          observer.onError(error)
+          return
+        }
+
+        guard let data = data else {
+          observer.onError(NSError(domain: "Invalid Data(null)", code: 0, userInfo: [:]))
+          return
+        }
+
+        observer.onNext(data)
+        observer.onCompleted()
+      }
+
+      task.resume()
+
+      return Disposables.create {
+        task.cancel()
+      }
+    }
+  }
+
+  #if false
   deinit {
     print("ViewController2가 해지되었음.")
   }
@@ -51,15 +121,14 @@ class ViewController2: UIViewController {
     //    사용하는 객체의 참조 계수가 올라갑니다.
     searchBar.rx.text
       .compactMap { $0 }
-      .subscribe(onNext: { [label](text: String) in
+      .subscribe(onNext: { [label] (text: String) in
 
         label?.text = text
 
         // self?.label.text = text
       })
       .disposed(by: disposeBag)
-    
-    
+
     // 2) Rx 에서는 이벤트 스트림이 파괴될 때, 클로저도 해지됩니다.
     //    명시적으로 이벤트 스트림을 dispose 하면 해결할 수 있다.
     //    : disposeBag = DisposeBag()
@@ -74,7 +143,7 @@ class ViewController2: UIViewController {
       })
       .disposed(by: disposeBag)
     #endif
-    
+
     // 1) weak / unowned 를 통해 self를 사용하자.
     #if false
     let d = searchBar.rx.text
@@ -151,4 +220,5 @@ class ViewController2: UIViewController {
     // compositeDisposable.dispose()
     // print("viewWillDisappear")
   }
+  #endif
 }
