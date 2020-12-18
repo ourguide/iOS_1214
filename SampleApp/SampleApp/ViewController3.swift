@@ -26,8 +26,28 @@ class ViewController3: UIViewController {
   //       - subscribe(onNext: )  => drive(onNext: )
   //       - bind(to: )           => drive()
   
+  // Subject
+  let email = BehaviorSubject<String>(value: "xxxxx")
+  
+  // let email = PublishSubject<String>()
+  
   override func viewDidLoad() {
     super.viewDidLoad()
+  
+    // Publish  => email.onNext("xx") 이 호출되기 전까지, 동작하지 않는다.
+    // Behavior => 초기값이 존재하기 떄문에, 최신 값 이벤트를 수신한다.
+    // email
+    //  .subscribe(onNext: { text in
+    //  })
+    //  .disposed(by: disposeBag)
+    
+    emailField.rx.text
+      .compactMap { $0 }
+//      .subscribe(onNext: { _ in
+//         self.email.onNext(emailText)
+//      })
+      .bind(to: email)
+      .disposed(by: disposeBag)
     
     let emailIsValid = emailField.rx.text
       .asDriver()
@@ -120,4 +140,25 @@ class ViewController3: UIViewController {
     #endif
   }
   #endif
+  
+  
+  func keyboardHeight() -> Observable<CGFloat> {
+    Observable.from([
+      NotificationCenter.default.rx.notification(UIResponder.keyboardWillShowNotification)
+        .map { notification -> CGFloat in
+          return 150.0
+        }
+      ,
+      NotificationCenter.default.rx.notification(UIResponder.keyboardWillHideNotification)
+        .map { notification -> CGFloat in
+          return 0
+        }
+    ])
+    .merge()
+    
+    
+    
+  }
+  
+  
 }
