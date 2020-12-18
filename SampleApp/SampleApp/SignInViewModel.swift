@@ -2,6 +2,7 @@
 import Foundation
 import RxSwift // RxCocoa를 사용하면 안됩니다.
 
+// Model과 상호작용한다.
 struct SignInViewModel {
   let email = BehaviorSubject<String>(value: "")
   let password = BehaviorSubject<String>(value: "")
