@@ -126,15 +126,15 @@
             <objects>
                 <viewController id="lHv-TM-o1C" customClass="ViewController2" customModule="SampleApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="2Pj-fl-7rO">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="647"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="dH1-HD-OaX">
-                                <rect key="frame" x="0.0" y="96" width="375" height="56"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="56"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="WlB-xe-lYz">
-                                <rect key="frame" x="0.0" y="152" width="375" height="494"/>
+                                <rect key="frame" x="0.0" y="56" width="375" height="570"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="MyCell" textLabel="qZc-wN-Mw2" detailTextLabel="Cbq-4J-u2a" style="IBUITableViewCellStyleSubtitle" id="PAr-Qo-IE4">
@@ -164,7 +164,7 @@
                                 </prototypes>
                             </tableView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="emm-KZ-4wK">
-                                <rect key="frame" x="0.0" y="646" width="375" height="21"/>
+                                <rect key="frame" x="0.0" y="626" width="375" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -196,6 +196,58 @@
             </objects>
             <point key="canvasLocation" x="255" y="511"/>
         </scene>
+        <!--Sample3-->
+        <scene sceneID="npw-0m-GbT">
+            <objects>
+                <viewController id="8GK-4c-Iyr" customClass="ViewController3" customModule="SampleApp" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="H3l-WP-Fg8">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="npt-yB-55M">
+                                <rect key="frame" x="87.5" y="487" width="200" height="100"/>
+                                <subviews>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="이메일" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r18-WV-d0N">
+                                        <rect key="frame" x="0.0" y="0.0" width="200" height="46"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="비밀번호" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="wbv-7J-Hhl">
+                                        <rect key="frame" x="0.0" y="54" width="200" height="46"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="100" id="FJB-Np-KPe"/>
+                                    <constraint firstAttribute="width" constant="200" id="SrV-kn-1u7"/>
+                                </constraints>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0Dc-Y6-rFB">
+                                <rect key="frame" x="0.0" y="619" width="375" height="48"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="48" id="noZ-jM-8Xy"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                                <state key="normal" title="로그인"/>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="sWc-c0-uCi"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="0Dc-Y6-rFB" firstAttribute="leading" secondItem="sWc-c0-uCi" secondAttribute="leading" id="g8P-51-h0U"/>
+                            <constraint firstItem="r18-WV-d0N" firstAttribute="centerX" secondItem="sWc-c0-uCi" secondAttribute="centerX" id="isJ-TX-Zg5"/>
+                            <constraint firstItem="0Dc-Y6-rFB" firstAttribute="top" secondItem="npt-yB-55M" secondAttribute="bottom" constant="32" id="jjW-Yj-tWU"/>
+                            <constraint firstItem="sWc-c0-uCi" firstAttribute="bottom" secondItem="0Dc-Y6-rFB" secondAttribute="bottom" id="rqy-uI-Ogl"/>
+                            <constraint firstItem="sWc-c0-uCi" firstAttribute="trailing" secondItem="0Dc-Y6-rFB" secondAttribute="trailing" id="w5n-Ee-NQy"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Sample3" id="jfY-AQ-X5M"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="c0Q-Ts-hPr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="254" y="1216"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="wf6-xm-9YU">
             <objects>
@@ -205,7 +257,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="lHv-TM-o1C" kind="relationship" relationship="rootViewController" id="bJd-SZ-ycy"/>
+                        <segue destination="8GK-4c-Iyr" kind="relationship" relationship="rootViewController" id="PFP-es-AY5"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BPQ-3g-dJK" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -213,9 +265,6 @@
             <point key="canvasLocation" x="-900" y="-235"/>
         </scene>
     </scenes>
-    <inferredMetricsTieBreakers>
-        <segue reference="bJd-SZ-ycy"/>
-    </inferredMetricsTieBreakers>
     <resources>
         <namedColor name="AccentColor">
             <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
