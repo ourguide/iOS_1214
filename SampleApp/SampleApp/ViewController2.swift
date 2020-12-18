@@ -51,26 +51,44 @@ class ViewController2: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+
     searchBar.rx.text
+      .throttle(.milliseconds(500), latest: true, scheduler: MainScheduler.instance) // 이벤트의 발생 빈도를 조절하고
       .compactMap { (text: String?) -> String? in
-        guard let text = text, text.count >= 3 else {
+        guard let text = text, text.count >= 2 else {
           return nil
         }
-        
+
         return text
       }
+//      .flatMap({ (q: String) -> Observable<UserSearchResponse> in
+//        self.searchUser(q: q)
+//      })
+      .flatMapLatest(searchUser(q:)) // 비동기 작업이 중첩되지 않도록 한다.
       .subscribe(onNext: { q in
         print(q)
+      }, onError: { error in
+        print("onError: \(error)")
       })
       .disposed(by: disposeBag)
-    
-    
+
 //    searchUser(q: "apple")
 //      .subscribe(onNext: { result in
 //        print(result)
 //      })
 //      .disposed(by: disposeBag)
+  }
+
+  func searchUserTest(q: String) -> Observable<UserSearchResponse> {
+    return Observable.create { (o) -> Disposable in
+      DispatchQueue.global().async {
+        Thread.sleep(forTimeInterval: 2)
+        o.onNext(UserSearchResponse(totalCount: 0, incompleteResults: false, items: []))
+        o.onCompleted()
+      }
+
+      return Disposables.create()
+    }
   }
 
   func searchUser(q: String) -> Observable<UserSearchResponse> {
