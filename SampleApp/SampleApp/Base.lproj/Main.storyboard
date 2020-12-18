@@ -230,19 +230,36 @@
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
                                 <state key="normal" title="로그인"/>
+                                <state key="disabled">
+                                    <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                </state>
                             </button>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="YsR-bu-cOC">
+                                <rect key="frame" x="112.5" y="187" width="150" height="150"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="150" id="KLj-IK-CNA"/>
+                                    <constraint firstAttribute="width" constant="150" id="gLC-Ap-aQ8"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="sWc-c0-uCi"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="npt-yB-55M" firstAttribute="top" secondItem="YsR-bu-cOC" secondAttribute="bottom" constant="150" id="TgL-tq-a7k"/>
                             <constraint firstItem="0Dc-Y6-rFB" firstAttribute="leading" secondItem="sWc-c0-uCi" secondAttribute="leading" id="g8P-51-h0U"/>
                             <constraint firstItem="r18-WV-d0N" firstAttribute="centerX" secondItem="sWc-c0-uCi" secondAttribute="centerX" id="isJ-TX-Zg5"/>
                             <constraint firstItem="0Dc-Y6-rFB" firstAttribute="top" secondItem="npt-yB-55M" secondAttribute="bottom" constant="32" id="jjW-Yj-tWU"/>
+                            <constraint firstItem="YsR-bu-cOC" firstAttribute="centerX" secondItem="sWc-c0-uCi" secondAttribute="centerX" id="k6t-CA-bxt"/>
                             <constraint firstItem="sWc-c0-uCi" firstAttribute="bottom" secondItem="0Dc-Y6-rFB" secondAttribute="bottom" id="rqy-uI-Ogl"/>
                             <constraint firstItem="sWc-c0-uCi" firstAttribute="trailing" secondItem="0Dc-Y6-rFB" secondAttribute="trailing" id="w5n-Ee-NQy"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Sample3" id="jfY-AQ-X5M"/>
+                    <connections>
+                        <outlet property="emailField" destination="r18-WV-d0N" id="6Se-8P-03O"/>
+                        <outlet property="imageView" destination="YsR-bu-cOC" id="M95-yu-BTu"/>
+                        <outlet property="loginButton" destination="0Dc-Y6-rFB" id="DOK-8n-dRd"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="c0Q-Ts-hPr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
