@@ -10,11 +10,14 @@ class ViewController4: UIViewController {
   @IBOutlet var loginButton: UIButton!
   @IBOutlet var imageView: UIImageView!
 
+  @IBOutlet var bottomMargin: NSLayoutConstraint!
+
   var viewModel = SignInViewModel()
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    // View -> ViewModel  bind
     emailField.rx.text
       .compactMap { $0 }
       .bind(to: viewModel.email)
@@ -24,14 +27,27 @@ class ViewController4: UIViewController {
       .compactMap { $0 }
       .bind(to: viewModel.password)
       .disposed(by: viewModel.disposeBag)
-    
-    
+
+    loginButton.rx.tap
+      .flatMap(viewModel.login)
+      .subscribe(onNext: { user in
+        print(user)
+      })
+      .disposed(by: viewModel.disposeBag)
+
+    // ViewModel -> View
     viewModel.loginButtonEnabled
       .bind(to: loginButton.rx.isEnabled)
       .disposed(by: viewModel.disposeBag)
-    
-    
-    
+
+    viewModel.isValidEmail
+      .map { $0 }
+      .bind(to: imageView.rx.isHidden)
+      .disposed(by: viewModel.disposeBag)
+
+    viewModel.keyboardHeight
+      .bind(to: bottomMargin.rx.constant)
+      .disposed(by: viewModel.disposeBag)
   }
 }
 
