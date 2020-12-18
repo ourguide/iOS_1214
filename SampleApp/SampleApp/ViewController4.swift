@@ -10,13 +10,29 @@ class ViewController4: UIViewController {
   @IBOutlet var loginButton: UIButton!
   @IBOutlet var imageView: UIImageView!
 
-  let disposeBag = DisposeBag()
+  var viewModel = SignInViewModel()
 
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    emailField.rx.text
+      .compactMap { $0 }
+      .bind(to: viewModel.email)
+      .disposed(by: viewModel.disposeBag)
+
+    passwordField.rx.text
+      .compactMap { $0 }
+      .bind(to: viewModel.password)
+      .disposed(by: viewModel.disposeBag)
+    
+    
+    viewModel.loginButtonEnabled
+      .bind(to: loginButton.rx.isEnabled)
+      .disposed(by: viewModel.disposeBag)
+    
+    
+    
   }
-  
-  
 }
 
 // iOP App
