@@ -54,6 +54,7 @@ class ViewController: UIViewController {
     //                         getAvatarImage
 
     _ = user
+      .debug()
       .take(1)
       .flatMap { (user) -> Observable<UIImage> in
         if let user = user {
