@@ -343,6 +343,7 @@
                     </view>
                     <navigationItem key="navigationItem" title="Sample4" id="eqX-QF-Wh4"/>
                     <connections>
+                        <outlet property="bottomMargin" destination="hBJ-rN-PS4" id="G4I-E7-FBD"/>
                         <outlet property="emailField" destination="fdQ-Wq-C7v" id="bQS-0v-BJ8"/>
                         <outlet property="imageView" destination="cHL-Es-8vH" id="2NK-Rv-Ucp"/>
                         <outlet property="loginButton" destination="RbX-sh-TUl" id="l7f-AM-cu4"/>
