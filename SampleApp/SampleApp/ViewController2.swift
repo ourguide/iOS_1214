@@ -34,6 +34,13 @@ struct UserSearchResponse: Decodable {
   let items: [User]
 }
 
+// Observable
+//  onNext
+//  onError / onComplete
+//  onDispose
+
+// - 에러가 발생하거나, 명시적으로 스트림이 종료되거나 하면 더 이상 이벤트가 발생하지 않습니다.
+
 class ViewController2: UIViewController {
   @IBOutlet var searchBar: UISearchBar!
   @IBOutlet var label: UILabel!
@@ -51,10 +58,19 @@ class ViewController2: UIViewController {
   // 검색 API - https://api.github.com/search/users?q=\(login)
 
   let items = PublishSubject<[User]>()
+  let errors = PublishSubject<Error>()
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    errors
+      .observe(on: MainScheduler.instance)
+      .map { error -> String in
+        error.localizedDescription
+      }
+      .bind(to: label.rx.text)
+      .disposed(by: disposeBag)
+    
     #if false
     tableView.rx.itemSelected
       .subscribe(onNext: { indexPath in
@@ -100,6 +116,7 @@ class ViewController2: UIViewController {
       .disposed(by: disposeBag)
 
     searchBar.rx.text
+      .debug()
       .throttle(.milliseconds(500), latest: true, scheduler: MainScheduler.instance) // 이벤트의 발생 빈도를 조절하고
       .compactMap { (text: String?) -> String? in
         guard let text = text, text.count >= 2 else {
@@ -148,7 +165,42 @@ class ViewController2: UIViewController {
 
     return getData(url: url)
       .compactMap { [decoder] data -> UserSearchResponse? in
-        try? decoder.decode(UserSearchResponse.self, from: data)
+        // try! decoder.decode(UserSearchResponse.self, from: data)
+        // - 프로그램이 비정상 종료됩니다.
+
+        // try decoder.decode(UserSearchResponse.self, from: data)
+        // - 오류가 발생하면, subscribe(onError:) 전달되고,
+        //   이벤트 스트림이 종료됩니다.
+        #if false
+        do {
+          return try decoder.decode(UserSearchResponse.self, from: data)
+        } catch {
+          if let json = String(data: data, encoding: .utf8) {
+            print("JSON parse error - \(json)")
+          }
+          
+          throw error
+        }
+        #endif
+        
+        // return try? decoder.decode(UserSearchResponse.self, from: data)
+        
+        do {
+          return try decoder.decode(UserSearchResponse.self, from: data)
+        } catch {
+          if let json = String(data: data, encoding: .utf8) {
+            print("JSON parse error - \(json)")
+          }
+          
+          // Error를 Subject에 전달한다.
+          self.errors.onNext(error)
+          
+          return nil
+        }
+        
+        
+        // 오류는 발생하지 않습니다.
+        // 오류의 발생 여부는 중요합니다.
       }
   }
 
