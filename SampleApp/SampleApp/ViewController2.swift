@@ -2,6 +2,7 @@ import UIKit
 
 import RxCocoa
 import RxSwift
+import Kingfisher
 
 // 1) compactMap
 // 2) filter
@@ -58,7 +59,8 @@ class ViewController2: UIViewController {
       .bind(to: tableView.rx.items(cellIdentifier: "MyCell")) { (index: Int, model: User, cell: UITableViewCell) in
         cell.textLabel?.text = model.login
         cell.detailTextLabel?.text = model.type
-        
+        cell.imageView?.kf
+          .setImage(with: URL(string: model.avatarUrl), placeholder: UIImage(named: "profile"))
       }
       .disposed(by: disposeBag)
 
