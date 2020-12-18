@@ -259,6 +259,7 @@
                         <outlet property="emailField" destination="r18-WV-d0N" id="6Se-8P-03O"/>
                         <outlet property="imageView" destination="YsR-bu-cOC" id="M95-yu-BTu"/>
                         <outlet property="loginButton" destination="0Dc-Y6-rFB" id="DOK-8n-dRd"/>
+                        <outlet property="passwordField" destination="wbv-7J-Hhl" id="Vry-S7-Y2A"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="c0Q-Ts-hPr" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
