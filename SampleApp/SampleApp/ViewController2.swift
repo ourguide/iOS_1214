@@ -1,8 +1,8 @@
 import UIKit
 
+import Kingfisher
 import RxCocoa
 import RxSwift
-import Kingfisher
 
 // 1) compactMap
 // 2) filter
@@ -55,8 +55,35 @@ class ViewController2: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    #if false
+    tableView.rx.itemSelected
+      .subscribe(onNext: { indexPath in
+        print("itemSelected - \(indexPath)")
+      })
+      .disposed(by: disposeBag)
+
+    tableView.rx.modelSelected(User.self)
+      .subscribe(onNext: { model in
+        print("modelSelected - \(model)")
+      })
+      .disposed(by: disposeBag)
+    #endif
+
+    Observable.zip(
+      tableView.rx.itemSelected,
+      tableView.rx.modelSelected(User.self)
+    )
+    .subscribe(onNext: { [tableView, label] (indexPath: IndexPath, model: User) in
+      print("\(indexPath) - \(model)")
+
+      tableView?.deselectRow(at: indexPath, animated: true)
+      label?.text = "\(model.login)"
+
+    })
+    .disposed(by: disposeBag)
+
     items
-      .bind(to: tableView.rx.items(cellIdentifier: "MyCell")) { (index: Int, model: User, cell: UITableViewCell) in
+      .bind(to: tableView.rx.items(cellIdentifier: "MyCell")) { (_: Int, model: User, cell: UITableViewCell) in
         cell.textLabel?.text = model.login
         cell.detailTextLabel?.text = model.type
         cell.imageView?.kf
