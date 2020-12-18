@@ -63,6 +63,9 @@ class ViewController2: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
+    // - UI의 이벤트 스트림은 화면을 나가기전까지 종료되지 않습니다.
+    // 별도로 처리하는 Subject가 유용합니다.
+    // - 한번만 수행되는 비동기 작업은 subscribe(onError:)를 이용해도 상관 없습니다.
     errors
       .observe(on: MainScheduler.instance)
       .map { error -> String in
