@@ -34,7 +34,7 @@ struct SignInViewModel {
     return Observable.combineLatest(email, password)
       .take(1)
       .flatMap { (_, _) -> Observable<User> in
-        Observable.just(User(login: "", avatarUrl: "", type: "Test"))
+        Observable.just(User(name: "", login: "", avatarUrl: "", type: "Test"))
       }
   }
   

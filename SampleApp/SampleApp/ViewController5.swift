@@ -5,24 +5,66 @@ import UIKit
 
 class ViewController5: UIViewController {
   @IBOutlet var searchNameField: UITextField!
-  @IBOutlet var avatarImageView: UIImageView!
   @IBOutlet var searchButton: UIButton!
 
+  @IBOutlet var avatarImageView: UIImageView!
   @IBOutlet var nameLabel: UILabel!
   @IBOutlet var typeLabel: UILabel!
+
+  var viewModel = ViewModel()
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
     // Do any additional setup after loading the view.
+
+    // View -> ViewModel
+    Observable.from([
+      searchNameField.rx.controlEvent(.editingDidEndOnExit),
+      searchButton.rx.tap
+    ])
+      .merge()
+      .throttle(.seconds(1), scheduler: MainScheduler.instance)
+      .flatMapLatest(viewModel.getUser)
+      .bind(to: viewModel.user)
+      .disposed(by: viewModel.disposeBag)
+
+    searchNameField.rx.text
+      .compactMap {
+        $0
+      }
+      .bind(to: viewModel.searchName)
+      .disposed(by: viewModel.disposeBag)
+
+    // ViewModel -> View
+    viewModel.userName
+      .bind(to: nameLabel.rx.text)
+      .disposed(by: viewModel.disposeBag)
+
+    viewModel.userType
+      .bind(to: typeLabel.rx.text)
+      .disposed(by: viewModel.disposeBag)
+
+    viewModel.searchButtonEnabled
+      .bind(to: searchButton.rx.isEnabled)
+      .disposed(by: viewModel.disposeBag)
+
+    viewModel.avatarImage
+      .bind(to: avatarImageView.rx.image)
+      .disposed(by: viewModel.disposeBag)
+
+    viewModel.title
+      .bind(to: navigationItem.rx.title)
+      .disposed(by: viewModel.disposeBag)
   }
 }
 
 struct ViewModel {
   let disposeBag = DisposeBag()
 
-  let searchName = BehaviorSubject<String>(value: "")
+  let title = BehaviorSubject<String>(value: "")
 
+  let searchName = BehaviorSubject<String>(value: "")
   let userName = BehaviorSubject<String>(value: "")
   let userType = BehaviorSubject<String>(value: "")
 
@@ -30,7 +72,7 @@ struct ViewModel {
   let avatarImage = PublishSubject<UIImage>()
 
   // searchName이 비어있지 않으면
-  lazy var searchButtonEnabled = {
+  lazy var searchButtonEnabled: Observable<Bool> = {
     searchName.map { (name: String) -> Bool in
       !name.isEmpty
     }
@@ -54,25 +96,42 @@ struct ViewModel {
       .subscribe(onNext: { [self] user in
         userName.onNext(user.name)
         userType.onNext(user.type)
+        title.onNext(user.login)
       })
       .disposed(by: disposeBag)
   }
 
   func getUser() -> Observable<User> {
-    searchName
-      .filter { login in
-        !login.isEmpty
-      }
-      .compactMap { (login: String) -> URL? in
-        URL(string: "https://api.github.com/users/\(login)")
-      }
-      .flatMapLatest(getData(url:))
-      .compactMap { (data: Data) -> User? in
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
+    guard let login = try? searchName.value() else {
+      return .empty()
+    }
 
-        return try? decoder.decode(User.self, from: data)
+    guard let url = URL(string: "https://api.github.com/users/\(login)") else {
+      return .empty()
+    }
+
+    let decoder = JSONDecoder()
+    decoder.keyDecodingStrategy = .convertFromSnakeCase
+
+    return getData(url: url)
+      .compactMap { (data: Data) -> User? in
+        try? decoder.decode(User.self, from: data)
       }
+
+//    searchName
+//      .filter { login in
+//        !login.isEmpty
+//      }
+//      .compactMap { (login: String) -> URL? in
+//        URL(string: "https://api.github.com/users/\(login)")
+//      }
+//      .flatMapLatest(getData(url:))
+//      .compactMap { (data: Data) -> User? in
+//        let decoder = JSONDecoder()
+//        decoder.keyDecodingStrategy = .convertFromSnakeCase
+//
+//        return try? decoder.decode(User.self, from: data)
+//      }
   }
 
   func getData(url: URL) -> Observable<Data> {
