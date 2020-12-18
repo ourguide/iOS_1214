@@ -52,12 +52,25 @@ class ViewController2: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
-    searchUser(q: "apple")
-      .subscribe(onNext: { result in
-        print(result)
+    searchBar.rx.text
+      .compactMap { (text: String?) -> String? in
+        guard let text = text, text.count >= 3 else {
+          return nil
+        }
+        
+        return text
+      }
+      .subscribe(onNext: { q in
+        print(q)
       })
       .disposed(by: disposeBag)
     
+    
+//    searchUser(q: "apple")
+//      .subscribe(onNext: { result in
+//        print(result)
+//      })
+//      .disposed(by: disposeBag)
   }
 
   func searchUser(q: String) -> Observable<UserSearchResponse> {
