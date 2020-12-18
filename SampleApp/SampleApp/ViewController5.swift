@@ -67,7 +67,7 @@ struct ViewModel {
   let userName = BehaviorSubject<String>(value: "")
   let userType = BehaviorSubject<String>(value: "")
 
-  let user = PublishSubject<User>()
+  let user = PublishSubject<User?>()
   let avatarImage = PublishSubject<UIImage>()
 
   // searchName이 비어있지 않으면
@@ -80,8 +80,12 @@ struct ViewModel {
   init() {
     // User가 변경되면 UIImage 업데이트
     user
-      .compactMap { (user: User) -> URL? in
-        URL(string: user.avatarUrl)
+      .compactMap { (user: User?) -> URL? in
+        guard let user = user else {
+          return nil
+        }
+        
+        return URL(string: user.avatarUrl)
       }
       .flatMapLatest(getData(url:))
       .compactMap { (data: Data) -> UIImage? in
@@ -93,9 +97,20 @@ struct ViewModel {
     // User가 변경되면 userName / userType 업데이트
     user
       .subscribe(onNext: { [self] user in
-        userName.onNext(user.name)
-        userType.onNext(user.type)
-        title.onNext(user.login)
+        if let user = user {
+          userName.onNext(user.name)
+          userType.onNext(user.type)
+          title.onNext(user.login)
+        } else {
+          userName.onNext("")
+          userType.onNext("")
+          title.onNext("Error!")
+          
+          if let image = UIImage(named: "profile") {
+            avatarImage.onNext(image)
+          }
+        }
+        
       })
       .disposed(by: disposeBag)
   }
@@ -114,23 +129,15 @@ struct ViewModel {
 
     return getData(url: url)
       .compactMap { (data: Data) -> User? in
-        try? decoder.decode(User.self, from: data)
+        if let result = try? decoder.decode(User.self, from: data) {
+          return result
+        } else {
+          
+          user.onNext(nil)
+        
+          return nil
+        }
       }
-
-//    searchName
-//      .filter { login in
-//        !login.isEmpty
-//      }
-//      .compactMap { (login: String) -> URL? in
-//        URL(string: "https://api.github.com/users/\(login)")
-//      }
-//      .flatMapLatest(getData(url:))
-//      .compactMap { (data: Data) -> User? in
-//        let decoder = JSONDecoder()
-//        decoder.keyDecodingStrategy = .convertFromSnakeCase
-//
-//        return try? decoder.decode(User.self, from: data)
-//      }
   }
 
   func getData(url: URL) -> Observable<Data> {
