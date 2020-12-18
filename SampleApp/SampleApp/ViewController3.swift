@@ -82,11 +82,18 @@ class ViewController3: UIViewController {
       .disposed(by: disposeBag)
     
     // Soft Keyboard Notification
+    #if false
     keyboardHeight()
       .subscribe(onNext: { height in
         self.bottomMargin.constant = height
       })
       .disposed(by: disposeBag)
+    #endif
+    
+    keyboardHeight()
+      .bind(to: bottomMargin.rx.constant)
+      .disposed(by: disposeBag)
+    
   }
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
