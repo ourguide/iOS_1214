@@ -24,3 +24,5 @@ class ViewController5: UIViewController {
 //         login     -> navigationItem.title
 
 // 3. follower 버튼은 user가 존재할 경우, 활성화된다.
+// 4. 검색 결과가 없는 경우 이미지는 기본 이미지로 변경된다.
+//     navigationItem.title도 Error!
