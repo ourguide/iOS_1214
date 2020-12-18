@@ -49,8 +49,26 @@ class ViewController2: UIViewController {
 
   // 검색 API - https://api.github.com/search/users?q=\(login)
 
+  let items = PublishSubject<[User]>()
+
   override func viewDidLoad() {
     super.viewDidLoad()
+
+    items
+      .bind(to: tableView.rx.items(cellIdentifier: "MyCell")) { (index: Int, model: User, cell: UITableViewCell) in
+        cell.textLabel?.text = model.login
+        cell.detailTextLabel?.text = model.type
+        
+      }
+      .disposed(by: disposeBag)
+
+    searchBar.rx.text
+//      .subscribe(onNext: { text in
+//        self.label.text = text
+//        // self.label.rx.text // onNext(text)
+//      })
+      .bind(to: label.rx.text)
+      .disposed(by: disposeBag)
 
     searchBar.rx.text
       .throttle(.milliseconds(500), latest: true, scheduler: MainScheduler.instance) // 이벤트의 발생 빈도를 조절하고
@@ -65,8 +83,11 @@ class ViewController2: UIViewController {
 //        self.searchUser(q: q)
 //      })
       .flatMapLatest(searchUser(q:)) // 비동기 작업이 중첩되지 않도록 한다.
-      .subscribe(onNext: { q in
-        print(q)
+      .map { (result: UserSearchResponse) -> [User] in
+        result.items
+      }
+      .subscribe(onNext: { items in
+        self.items.onNext(items)
       }, onError: { error in
         print("onError: \(error)")
       })
